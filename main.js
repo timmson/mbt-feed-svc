@@ -1,10 +1,19 @@
 const config = require('./config.js');
 
 const nmap = require('node-nmap');
-const mongo = require('mongodb');
+const Mongo = require('mongodb');
+const AMQP = require('amqp');
 const log = require('log4js').getLogger('net-service');
 
-module.exports.getHosts = function (callback) {
+module.exports.getNetworkState = function (topic) {
+    log.info("Update network state");
+    getHosts((err, message) => {
+        err ? log.error(err.stack) : postState(message);
+    });
+
+};
+
+function getHosts(callback) {
 
     log.debug("Network scan is in progress");
     const quickScan = new nmap.nodenmap.QuickScan(config.network.address);
@@ -42,8 +51,20 @@ module.exports.getHosts = function (callback) {
 
         quickScan.startScan();
     });
-};
+}
 
+function postState(message) {
+    log.info(config.to + " <- " + message);
+    const connection = AMQP.createConnection(config.mq);
+
+    connection.on('error', err => log.error("Error from amqp: " + err.stack));
+
+    connection.on('ready', () => {
+        connection.exchange(config.mq, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
+            exchange.publish('', message, {}, (isSend, err) => err ? log.error(err.stack) : 0)
+        );
+    });
+}
 
 function getMessage(hostIp, sign) {
     return [hostIp, (config.network.knownHosts[hostIp] || '<b>?</b>'), sign].join(' ');
@@ -60,7 +81,7 @@ function loadNetworkState(callback) {
 
 function call(action, callback) {
     callback = (callback ? callback : (err, result) => err ? log.error(err.stack) : 0);
-    mongo.connect('mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database, (err, db) => {
+    Mongo.connect('mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database, (err, db) => {
         err ? callback(err, null) : action(db, callback);
         db.close();
     });

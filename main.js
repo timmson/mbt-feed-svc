@@ -55,7 +55,7 @@ function getHosts(callback) {
 
 function postState(message) {
     log.info(config.to + " <- " + message);
-    const connection = AMQP.createConnection(config.mq);
+    const connection = AMQP.createConnection(config.mq.connection);
 
     connection.on('error', err => log.error("Error from amqp: " + err.stack));
 

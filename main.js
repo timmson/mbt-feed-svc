@@ -1,4 +1,4 @@
-const config = require('./../mbt-platform/roles/node-mbt/templates/config.js');
+const config = require('./config.js');
 
 const nmap = require('node-nmap');
 const mongo = require('mongo');

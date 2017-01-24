@@ -1,4 +1,4 @@
-const config = require('./config');
+const config = require('./config.js');
 const main = require('./main.js');
 
 const AMQP = require('amqp');
@@ -24,13 +24,13 @@ function getNetworkState(topic) {
 
 function postState(message) {
     log.info(config.to + " <- " + message);
-    /*const connection = AMQP.createConnection(config.mq.connection);
+    const connection = AMQP.createConnection(config.mq.connection);
 
-     connection.on('error', err => log.error("Error from amqp: " + err.stack));
+    connection.on('error', err => log.error("Error from amqp: " + err.stack));
 
-     connection.on('ready', () => {
-     connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
-     exchange.publish('', message, {}, (isSend, err) => err ? log.error(err.stack) : 0)
-     );
-     });*/
+    connection.on('ready', () => {
+        connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
+            exchange.publish('', message, {}, (isSend, err) => err ? log.error(err.stack) : 0)
+        );
+    });
 }

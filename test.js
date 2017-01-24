@@ -1,3 +1,4 @@
+/*
 const main = require('./main.js');
 const fs = require('fs');
 
@@ -14,3 +15,4 @@ fs.readFile('rss1.xml', (err, contents) => {
         console.log(err);
     }
 });
+*/

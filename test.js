@@ -1,6 +1,9 @@
 const config = require('./config.js');
 const main = require('./main.js');
 
+const AMQP = require('amqp');
+const log = require('log4js').getLogger('net-service');
+
 log.info("Service started");
 
 main.getHosts((err, message) => {

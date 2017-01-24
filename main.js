@@ -60,7 +60,7 @@ function postState(message) {
     connection.on('error', err => log.error("Error from amqp: " + err.stack));
 
     connection.on('ready', () => {
-        connection.exchange(config.mq, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
+        connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
             exchange.publish('', message, {}, (isSend, err) => err ? log.error(err.stack) : 0)
         );
     });

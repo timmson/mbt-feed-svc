@@ -11,6 +11,10 @@ module.exports.getHosts = function (callback) {
 
     loadNetworkState((err, networkState) => {
 
+        if (err) {
+            callback(err, null);
+        }
+
         networkState.hosts = networkState.hasOwnProperty('hosts') ? networkState.hosts : [];
 
         quickScan.on('complete', data => {

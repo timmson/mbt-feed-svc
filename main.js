@@ -53,8 +53,9 @@ function getHosts(callback) {
     });
 }
 
-function postState(message) {
-    log.info(config.to + " <- " + message);
+function postState(text) {
+    log.info(config.to.username + " <- " + text);
+    const message = {to: config.to, text: text};
     const connection = AMQP.createConnection(config.mq.connection);
 
     connection.on('error', err => log.error("Error from amqp: " + err.stack));

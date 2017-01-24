@@ -1,7 +1,7 @@
 const config = require('./config.js');
 
 const nmap = require('node-nmap');
-const mongo = require('mongo');
+const mongo = require('mongodb');
 const log = require('log4js').getLogger('net-service');
 
 module.exports.getHosts = function (callback) {

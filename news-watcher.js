@@ -10,7 +10,7 @@ let news = {
 };
 
 module.exports.getFeed = function (topic) {
-    let callback = (err, messages) => err ? 0 : messages.slice(0, topic.limit).forEach(message => postMessage(topic.to, messages));
+    let callback = (err, messages) => err ? 0 : messages.slice(0, topic.limit).forEach(message => postMessage(topic.channel, messages));
     news.hasOwnProperty(topic.name) ? news[topic.name](topic.url, callback) : feedReader(topic.url, callback);
 };
 

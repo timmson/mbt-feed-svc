@@ -18,7 +18,7 @@ let topics = [
         name: 'demo',
         channel: '@tmsnDemotivators',
         url: "http://demotivators.to/feeds/recent/",
-        cronTime: '0 * * * * *',
+        cronTime: '0 0 17 * * *',
         limit: 10
     }
     /*{name: 'cars', channel: '@tmsnDemotivators', url: "https://auto.mail.ru/rss/"}

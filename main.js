@@ -62,7 +62,7 @@ function postState(text) {
 
     connection.on('ready', () => {
         connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
-            exchange.publish('', message, {}, (isSend, err) => err ? log.error(err.stack) : 0)
+            exchange.publish('', JSON.stringify(message), {}, (isSend, err) => err ? log.error(err.stack) : 0)
         );
     });
 }

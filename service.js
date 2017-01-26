@@ -6,8 +6,4 @@ const log = require('log4js').getLogger('net-service');
 
 log.info("Service started");
 
-new CronJob({
-    cronTime: config.cron,
-    onTick: main.getNetworkState(),
-    start: true
-});
+new CronJob({cronTime: config.cron, onTick: main.getNetworkState, start: true});

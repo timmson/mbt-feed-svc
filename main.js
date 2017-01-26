@@ -68,7 +68,7 @@ function postState(text) {
 }
 
 function getMessage(hostIp, sign) {
-    return [hostIp, (config.network.knownHosts[hostIp] || '<b>?</b>'), sign].join(' ');
+    return [hostIp, (config.network.knownHosts[hostIp] || '???'), sign].join(' ');
 }
 
 

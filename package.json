@@ -6,6 +6,7 @@
   "dependencies": {
     "amqp": "^0.2.6",
     "cron": "^1.2.1",
+    "feed-read": "0.0.1",
     "log4js": "^1.1.0",
     "mongodb": "^2.2.22",
     "node-nmap": "^3.0.3"

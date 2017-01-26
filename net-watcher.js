@@ -5,7 +5,7 @@ const Mongo = require('mongodb');
 const AMQP = require('amqp');
 const log = require('log4js').getLogger('net-service');
 
-module.exports.getNetworkState = function (topic) {
+module.exports.getNetworkState = function () {
     log.info("Update network state");
     getHosts((err, message) => {
         err ? log.error(err.stack) : postState(message);

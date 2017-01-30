@@ -32,7 +32,7 @@ let topics = [
     },
     {
         name: 'cars-motor',
-        channel: '@tmsnDemotivators',
+        channel: '@tmsnAutoNews',
         url: 'http://motor.ru/export/atom',
         cronTime: '0 0 10-20 * * *',
         period: 3600000,

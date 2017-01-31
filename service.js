@@ -20,7 +20,7 @@ let topics = [
         url: 'http://demotivators.to/feeds/recent/',
         cronTime: '0 0 13 * * *',
         period: 3600000,
-        limit: 10
+        limit: 15
     },
     {
         name: 'cars-auto',

@@ -11,7 +11,7 @@ let news = {
 
 module.exports.getFeed = function (topic) {
     let callback = null;
-    if (topic === 'demo') {
+    if (topic.name === 'demo') {
         callback = (err, messages) => err ? 0 : messages.slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message.link));
     } else {
         callback = (err, messages) => err ? 0 : messages.filter(message => isNew(message, topic.period)).slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message.link));

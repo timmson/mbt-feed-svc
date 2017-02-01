@@ -15,9 +15,6 @@ module.exports.getNetworkState = function () {
 
 function getHosts(callback) {
 
-    log.debug("Network scan is in progress");
-    const quickScan = new nmap.nodenmap.QuickScan(config.network.address);
-
     loadNetworkState((err, networkState) => {
 
         if (err) {

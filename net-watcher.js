@@ -1,6 +1,6 @@
 const config = require('./config.js');
 
-const nmap = require('node-nmap');
+const request = require('request');
 const Mongo = require('mongodb');
 const AMQP = require('amqp');
 const log = require('log4js').getLogger('net-service');
@@ -26,30 +26,30 @@ function getHosts(callback) {
 
         networkState.hosts = networkState.hasOwnProperty('hosts') ? networkState.hosts : [];
 
-        quickScan.on('complete', data => {
-            let onlineHosts = data.map(host => host.ip).filter(hostIp => !config.network.skippedHosts.includes(hostIp));
-            let lastStateHosts = networkState.hosts;
+        scanNetwork((err, onlineHosts) => {
+            if (err) {
+                callback(err, null)
+            } else {
+                let lastStateHosts = networkState.hosts;
 
-            log.debug("Alive hosts: " + onlineHosts);
+                log.debug("Alive hosts: " + onlineHosts);
 
-            onlineHosts.filter(hostIp => !lastStateHosts.includes(hostIp)).forEach(hostIp => {
-                log.debug(hostIp + ' is up');
-                callback(null, getMessage(hostIp, '👻'));
-            });
+                onlineHosts.filter(host => !lastStateHosts.includes(host.ip)).forEach(host => {
+                    log.debug(host.ip + ' is up');
+                    callback(null, host.ip + ' ' + host.description + ' 👻');
+                });
 
-            lastStateHosts.filter(hostIp => !onlineHosts.includes(hostIp)).forEach(hostIp => {
-                log.debug(hostIp + ' is up');
-                callback(null, getMessage(hostIp, '☠'));
-            });
+                lastStateHosts.filter(hostIp => !onlineHosts.includes(hostIp)).forEach(hostIp => {
+                    log.debug(hostIp + ' is up');
+                    callback(null, hostIp + ' ☠');
+                });
 
-            networkState.hosts = onlineHosts;
+                networkState.hosts = onlineHosts.filter(host => host.ip);
 
-            saveNetworkState(networkState, (err, res) => err ? callback(err, null) : 0);
+                saveNetworkState(networkState, (err, res) => err ? callback(err, null) : 0);
+            }
         });
 
-        quickScan.on('error', err => err ? callback(err, null) : 0);
-
-        quickScan.startScan();
     });
 }
 
@@ -67,11 +67,6 @@ function postState(text) {
     });
 }
 
-function getMessage(hostIp, sign) {
-    return [hostIp, (config.network.knownHosts[hostIp] || '???'), sign].join(' ');
-}
-
-
 function saveNetworkState(networkState, callback) {
     call((db, callback) => db.collection('network-state').updateOne({}, networkState, {upsert: true}, callback), callback);
 }
@@ -87,4 +82,10 @@ function call(action, callback) {
         db.close();
     });
 
+}
+
+function scanNetwork(callback) {
+    const hostSvc = config.hostSvc;
+    const url = 'http://' + hostSvc.host + ':' + hostSvc.port + '/net.json';
+    request(url, (err, body, response) => callback(err, err ? null : JSON.parse(body)));
 }

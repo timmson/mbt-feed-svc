@@ -9,7 +9,7 @@
     "feed-read": "0.0.1",
     "log4js": "^1.1.0",
     "mongodb": "^2.2.22",
-    "node-nmap": "^3.0.3"
+    "request": "2.79.0"
   },
   "scripts": {
     "start": "node service.js",

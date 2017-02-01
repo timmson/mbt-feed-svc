@@ -10,27 +10,36 @@ let news = {
 };
 
 module.exports.getFeed = function (topic) {
-    let callback = (err, messages) => err ? 0 : messages.slice(0, topic.limit).forEach(message => postMessage(topic.channel, message.link));
+    let callback = null;
+    if (topic.name === 'demo') {
+        callback = (err, messages) => err ? 0 : messages.slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message.link));
+    } else {
+        callback = (err, messages) => err ? 0 : messages.filter(message => isNew(message, topic.period)).slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message.link));
+    }
     news.hasOwnProperty(topic.name) ? news[topic.name](topic.url, callback) : feedReader(topic.url, callback);
 };
 
 function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.map(feed => {
-                let imageUrl = feed.content.match(/src=.*\.thumbnail/i)[0];
-                feed.link = imageUrl.substr(5, imageUrl.length - 15) + '.jpg';
-                //feed.pubDate = ?
-                return feed;
-            }));
+            let imageUrl = feed.content.match(/src=.*\.thumbnail/i)[0];
+            feed.link = imageUrl.substr(5, imageUrl.length - 15) + '.jpg';
+            return feed;
+        }));
     });
 }
 
 function getMovieNews(url, callback) {
     feedReader(url, (err, feeds) => callback(err, err ? feeds : feeds.map(feed => {
-            feed.link = feed.link.replace('kinozal.tv', 'kinozal.me');
-            return feed;
-        })));
+        feed.link = feed.link.replace('kinozal.tv', 'kinozal.me');
+        return feed;
+    })));
 }
+
+function isNew(message, period) {
+    return (new Date().getTime() - new Date(message.published).getTime()) <= period
+}
+
 
 function postMessage(to, text) {
     log.info(to + " <- " + text);

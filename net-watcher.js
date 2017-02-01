@@ -84,5 +84,8 @@ function call(action, callback) {
 function scanNetwork(callback) {
     const hostSvc = config.hostSvc;
     const url = 'http://' + hostSvc.host + ':' + hostSvc.port + '/net.json';
-    request(url, (err, body, response) => callback(err, err ? null : JSON.parse(body)));
+    request(url, (err, body, response) => {
+        console.log(response);
+        callback(err, err ? null : JSON.parse(body));
+    });
 }

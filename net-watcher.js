@@ -41,7 +41,7 @@ function getHosts(callback) {
                     callback(null, hostIp + ' ☠');
                 });
 
-                networkState.hosts = onlineHosts.filter(host => host.ip);
+                networkState.hosts = onlineHosts.map(host => host.ip);
 
                 saveNetworkState(networkState, (err, res) => err ? callback(err, null) : 0);
             }

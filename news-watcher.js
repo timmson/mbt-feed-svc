@@ -8,6 +8,7 @@ const log = require('log4js').getLogger('news-service');
 
 let news = {
     'demo': getDemoNews,
+    'cars-auto': getAutoNews,
     'cars-motor': getMotorNews
 };
 
@@ -31,6 +32,20 @@ function getDemoNews(url, callback) {
     });
 }
 
+function getAutoNews(url, callback) {
+    request(url, {}, (err, response, body) => {
+        err ? callback(err, null) : 0;
+        xml2js(body, (err, result) => {
+            err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
+                    title: entry['title'][0],
+                    link: entry['link'][0],
+                    published: entry['pubDate'][0],
+                    image_url: entry['enclosure'][0]['$']['url']
+                })));
+        });
+    });
+}
+
 function getMotorNews(url, callback) {
     request(url, {}, (err, response, body) => {
         err ? callback(err, null) : 0;
@@ -51,7 +66,7 @@ function isNew(message, period) {
 
 
 function postMessage(to, feed) {
-    log.info(to + " <- " + feed.text);
+    log.info(to + " <- " + feed.title);
     const message = {
         to: {
             id: to,

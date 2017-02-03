@@ -7,5 +7,5 @@ newsWatcher.getFeed({
     url: 'https://demotivators.to/feeds/recent/',
     cronTime: '0 0 10-20 * * *',
     period: 3600000,
-    limit: 10
+    limit: 1
 });

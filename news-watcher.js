@@ -80,6 +80,8 @@ function postMessage(to, feed) {
         message.type = 'image_link';
     }
 
+    log.debug(JSON.stringify(message));
+
     const connection = AMQP.createConnection(config.mq.connection);
     connection.on('error', err => log.error("Error from amqp: " + err.stack));
     connection.on('ready', () => {

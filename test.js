@@ -1,6 +1,11 @@
-//const config = require('./config.js');
-const main = require('./net-watcher');
+const config = require('./config.js');
+const newsWatcher = require('./news-watcher.js');
 
-const log = require('log4js').getLogger('net-service');
-
-main.getNetworkState();
+newsWatcher.getFeed({
+    name: 'cars-motor',
+    channel: '168739439',
+    url: 'http://motor.ru/export/atom',
+    cronTime: '0 0 10-20 * * *',
+    period: 3600000,
+    limit: 10
+});

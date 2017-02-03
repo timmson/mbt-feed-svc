@@ -14,19 +14,15 @@ let news = {
 
 module.exports.getFeed = function (topic) {
     let callback = null;
-    if (topic.name === 'demo') {
-        callback = (err, messages) => err ? 0 : messages.slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message.link));
-    } else {
-        callback = (err, messages) => err ? 0 : messages.filter(message => isNew(message, topic.period)).slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message));
-    }
+    callback = (err, messages) => err ? 0 : messages.filter(message => isNew(message, topic.period)).slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message));
     news.hasOwnProperty(topic.name) ? news[topic.name](topic.url, callback) : feedReader(topic.url, callback);
 };
 
 function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.map(feed => {
-                let imageUrl = feed.content.match(/src=.*\.thumbnail/i)[0];
-                feed.link = imageUrl.substr(5, imageUrl.length - 15) + '.jpg';
+                feed.image_url = feed.content.match(/src=.*\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
+                feed.published = new Date().toString();
                 return feed;
             }));
     });

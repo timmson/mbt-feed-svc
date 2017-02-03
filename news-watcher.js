@@ -21,7 +21,7 @@ module.exports.getFeed = function (topic) {
 function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.map(feed => {
-                feed.image_url = feed.content.match(/src=.*\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
+                feed.image_url = feed.content.match(/https:\/\/.*\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
                 feed.published = new Date().toString();
                 return feed;
             }));
@@ -69,16 +69,11 @@ function postMessage(to, feed) {
             username: to
         },
         version: 2,
-        type: 'link',
+        type: 'image_link',
         text: feed.title,
         image: feed.image_url,
         url: feed.link,
     };
-
-    if (feed.hasOwnProperty('image_url')) {
-        message.image = feed.image_url;
-        message.type = 'image_link';
-    }
 
     log.debug(JSON.stringify(message));
 

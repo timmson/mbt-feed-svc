@@ -21,7 +21,7 @@ module.exports.getFeed = function (topic) {
 function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.map(feed => {
-                feed.image_url = feed.content.match(/http:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
+                feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
                 feed.published = new Date().toString();
                 return feed;
             }));

@@ -45,7 +45,7 @@ function getMotorNews(url, callback) {
     request(url, {}, (err, response, body) => {
         err ? callback(err, null) : 0;
         xml2js(body, (err, result) => {
-            err ? callback(err, null) : callback(err, result.feed.entry..filter(e=>e.['media:content']).map(entry => ({
+            err ? callback(err, null) : callback(err, result.feed.entry..filter(e => e['media:content']).map(entry => ({
                     title: entry['title'][0],
                     link: entry['link'][0]['$']['href'],
                     published: entry['updated'][0],

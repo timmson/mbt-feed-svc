@@ -7,56 +7,53 @@ const AMQP = require('amqp');
 const log = require('log4js').getLogger('news-service');
 
 let news = {
-    'demo': this.getDemoNews,
-    'cars-auto': this.getAutoNews,
-    'cars-motor': this.getMotorNews
+    'demo': getDemoNews,
+    'cars-auto': getAutoNews,
+    'cars-motor': getMotorNews
 };
 
-module.exports = {
-
-    getFeed: function (topic) {
-        let callback = (err, messages) => err ? 0 : messages.filter(message => isNew(message, topic.period)).slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message));
-        news.hasOwnProperty(topic.name) ? news[topic.name](topic.url, callback) : feedReader(topic.url, callback);
-    },
-
-    getDemoNews: function (url, callback) {
-        feedReader(url, (err, feeds) => {
-            callback(err, err ? feeds : feeds.filter(feed => feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)).map(feed => {
-                    feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
-                    feed.published = new Date().toString();
-                    return feed;
-                }));
-        });
-    },
-
-    getAutoNews: function (url, callback) {
-        request(url, {}, (err, response, body) => {
-            err ? callback(err, null) : 0;
-            xml2js(body, (err, result) => {
-                err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
-                        title: entry['title'][0],
-                        link: entry['link'][0],
-                        published: entry['pubDate'][0],
-                        image_url: entry['enclosure'][0]['$']['url']
-                    })));
-            });
-        });
-    },
-
-    getMotorNews: function (url, callback) {
-        request(url, {}, (err, response, body) => {
-            err ? callback(err, null) : 0;
-            xml2js(body, (err, result) => {
-                err ? callback(err, null) : callback(err, result.feed.entry.filter(e => e['media:content']).map(entry => ({
-                        title: entry['title'][0],
-                        link: entry['link'][0]['$']['href'],
-                        published: entry['updated'][0],
-                        image_url: entry['media:content'][0]['$']['url']
-                    })));
-            });
-        });
-    }
+module.exports.getFeed = function (topic) {
+    let callback = (err, messages) => err ? 0 : messages.filter(message => isNew(message, topic.period)).slice(0, topic.limit).reverse().forEach(message => postMessage(topic.channel, message));
+    news.hasOwnProperty(topic.name) ? news[topic.name](topic.url, callback) : feedReader(topic.url, callback);
 };
+
+function getDemoNews(url, callback) {
+    feedReader(url, (err, feeds) => {
+        callback(err, err ? feeds : feeds.filter(feed => feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)).map(feed => {
+                feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
+                feed.published = new Date().toString();
+                return feed;
+            }));
+    });
+}
+
+function getAutoNews(url, callback) {
+    request(url, {}, (err, response, body) => {
+        err ? callback(err, null) : 0;
+        xml2js(body, (err, result) => {
+            err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
+                    title: entry['title'][0],
+                    link: entry['link'][0],
+                    published: entry['pubDate'][0],
+                    image_url: entry['enclosure'][0]['$']['url']
+                })));
+        });
+    });
+}
+
+function getMotorNews(url, callback) {
+    request(url, {}, (err, response, body) => {
+        err ? callback(err, null) : 0;
+        xml2js(body, (err, result) => {
+            err ? callback(err, null) : callback(err, result.feed.entry..filter(e=>e.['media:content']).map(entry => ({
+                    title: entry['title'][0],
+                    link: entry['link'][0]['$']['href'],
+                    published: entry['updated'][0],
+                    image_url: entry['media:content'][0]['$']['url']
+                })));
+        });
+    });
+}
 
 function isNew(message, period) {
     return (new Date().getTime() - new Date(message.published).getTime()) <= period

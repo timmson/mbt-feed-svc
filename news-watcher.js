@@ -78,9 +78,13 @@ function postMessage(to, feed) {
 
     const connection = AMQP.createConnection(config.mq.connection);
     connection.on('error', err => log.error("Error from amqp: " + err.stack));
-    connection.on('ready', () => {
+    connection.on('ready', () =>
         connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
-            exchange.publish('', JSON.stringify(message), {}, (isSend, err) => err ? log.error(err.stack) : 0)
-        );
-    });
+            exchange.publish('', JSON.stringify(message), {}, (isSend, err) => {
+                    err ? log.error(err.stack) : 0;
+                    connection.disconnect();
+                }
+            )
+        )
+    );
 }

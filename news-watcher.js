@@ -6,6 +6,8 @@ const xml2js = require('xml2js').parseString;
 const AMQP = require('amqp');
 const log = require('log4js').getLogger('news-service');
 
+let demoCache = {};
+
 let news = {
     'demo': getDemoNews,
     'cars-auto': getAutoNews,
@@ -21,7 +23,7 @@ function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.filter(feed => feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)).map(feed => {
                 feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
-                feed.published = new Date().toString();
+                feed.published = getPublishTime(feed.image_url);
                 return feed;
             }));
     });
@@ -59,6 +61,12 @@ function isNew(message, period) {
     return (new Date().getTime() - new Date(message.published).getTime()) <= period
 }
 
+function getPublishTime(url) {
+    if (demoCache[url] == null) {
+        demoCache[url] = new Date().toString();
+    }
+    return demoCache[url];
+}
 
 function postMessage(to, feed) {
     log.info(to + " <- " + feed.title);

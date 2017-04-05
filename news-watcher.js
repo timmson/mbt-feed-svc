@@ -38,7 +38,7 @@ function getTodayHolidays(url, callback) {
                 title: entry['title'][0],
                 link: entry['link'][0],
                 published: entry['pubDate'][0],
-                image_url: imageIdToUrl(entry['link'][0], 'http://www.calend.ru/img/content_events')
+                image_url: imageIdToUrl(entry['link'][0], 'http://www.calend.ru/img/content')
             })));
         });
     });

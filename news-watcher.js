@@ -10,6 +10,7 @@ let demoCache = {};
 
 let news = {
     'demo': getDemoNews,
+    'holidays': getTodayHolidays,
     'cars-auto': getAutoNews,
     'cars-motor': getMotorNews
 };
@@ -22,10 +23,24 @@ module.exports.getFeed = function (topic) {
 function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.filter(feed => feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)).map(feed => {
-                feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
-                feed.published = getPublishTime(feed.image_url);
-                return feed;
-            }));
+            feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
+            feed.published = getPublishTime(feed.image_url);
+            return feed;
+        }));
+    });
+}
+
+function getTodayHolidays(url, callback) {
+    request(url, {}, (err, response, body) => {
+        err ? callback(err, null) : 0;
+        xml2js(body, (err, result) => {
+            err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
+                title: entry['title'][0],
+                link: entry['link'][0],
+                published: entry['pubDate'][0],
+                image_url: imageIdToUrl(entry['link'][0], 'http://www.calend.ru/img/content_events')
+            })));
+        });
     });
 }
 
@@ -34,11 +49,11 @@ function getAutoNews(url, callback) {
         err ? callback(err, null) : 0;
         xml2js(body, (err, result) => {
             err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
-                    title: entry['title'][0],
-                    link: entry['link'][0],
-                    published: entry['pubDate'][0],
-                    image_url: entry['enclosure'][0]['$']['url']
-                })));
+                title: entry['title'][0],
+                link: entry['link'][0],
+                published: entry['pubDate'][0],
+                image_url: entry['enclosure'][0]['$']['url']
+            })));
         });
     });
 }
@@ -48,11 +63,11 @@ function getMotorNews(url, callback) {
         err ? callback(err, null) : 0;
         xml2js(body, (err, result) => {
             err ? callback(err, null) : callback(err, result.feed.entry.filter(e => e['media:content']).map(entry => ({
-                    title: entry['title'][0],
-                    link: entry['link'][0]['$']['href'],
-                    published: entry['updated'][0],
-                    image_url: entry['media:content'][0]['$']['url']
-                })));
+                title: entry['title'][0],
+                link: entry['link'][0]['$']['href'],
+                published: entry['updated'][0],
+                image_url: entry['media:content'][0]['$']['url']
+            })));
         });
     });
 }
@@ -66,6 +81,12 @@ function getPublishTime(url) {
         demoCache[url] = new Date().toString();
     }
     return demoCache[url];
+}
+
+function imageIdToUrl(linkUrl, imageUrlPrefix) {
+    let id = linkUrl.match(/\/[0-9]{3,4}\//)[0];
+    id = Number.parseInt(id.substring(1, id.length - 1));
+    return [imageUrlPrefix, 'i' + Math.floor(id / 1000), id + '.jpg'].join('/');
 }
 
 function postMessage(to, feed) {

@@ -30,7 +30,7 @@ function getDemoNews(url, callback) {
     });
 }
 
-function getTodayHolidays(url, callback) {
+/*function getTodayHolidays(url, callback) {
     request(url, {}, (err, response, body) => {
         err ? callback(err, null) : 0;
         xml2js(body, (err, result) => {
@@ -40,6 +40,21 @@ function getTodayHolidays(url, callback) {
                 published: entry['pubDate'][0],
                 image_url: imageIdToUrl(entry['link'][0], 'http://www.calend.ru/img/content')
             })));
+        });
+    });
+}*/
+
+function getTodayHolidays(url, callback) {
+    request(url, {}, (err, response, body) => {
+        err ? callback(err, null) : 0;
+        xml2js(body, (err, result) => {
+            err ? callback(err, null) : callback(err, [
+                {
+                    title: result.rss.channel[0].item.reduce((previousValue, currentValue) => previousValue + '\n' + currentValue['title'][0], ''),
+                    published: new Date().toString(),
+                    link: 'http://www.calend.ru/'
+                }
+            ]);
         });
     });
 }
@@ -97,7 +112,7 @@ function postMessage(to, feed) {
             username: to
         },
         version: 2,
-        type: 'image_link',
+        type: feed.image_url ? 'image_link' : 'link',
         text: feed.title,
         image: feed.image_url,
         url: feed.link,

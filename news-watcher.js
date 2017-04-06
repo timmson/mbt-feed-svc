@@ -30,27 +30,23 @@ function getDemoNews(url, callback) {
     });
 }
 
-/*function getTodayHolidays(url, callback) {
-    request(url, {}, (err, response, body) => {
-        err ? callback(err, null) : 0;
-        xml2js(body, (err, result) => {
-            err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
-                title: entry['title'][0],
-                link: entry['link'][0],
-                published: entry['pubDate'][0],
-                image_url: imageIdToUrl(entry['link'][0], 'http://www.calend.ru/img/content')
-            })));
-        });
-    });
-}*/
-
 function getTodayHolidays(url, callback) {
     request(url, {}, (err, response, body) => {
         err ? callback(err, null) : 0;
         xml2js(body, (err, result) => {
             err ? callback(err, null) : callback(err, [
                 {
-                    title: result.rss.channel[0].item.reduce((previousValue, currentValue) => previousValue + '\n' + currentValue['title'][0], ''),
+                    title: result.rss.channel[0].item.map(event => {
+                        return {
+                            day: event['title'][0].split('-')[0].trim(),
+                            title: event['title'][0].split('-')[1].trim(),
+                            description: event['description'][0].replace(/(\r\n|\n|\r)/gm, "")
+                        }
+                    }).filter(isToday).reduce((previousValue, currentValue, i) => {
+                        return previousValue + '\n\n' + (i == 0 ? 'Поводы 🍻 имменно сегодня, <i>' +
+                                currentValue['day'] + '</i>\n\n' : '' ) + '<b>' + currentValue['title'] + '</b> - ' +
+                            currentValue['description'];
+                    }, ''),
                     published: new Date().toString(),
                     link: 'http://www.calend.ru/'
                 }
@@ -91,17 +87,15 @@ function isNew(message, period) {
     return (new Date().getTime() - new Date(message.published).getTime()) <= period
 }
 
+function isToday(item) {
+    return item['day'].indexOf(new Date().getDate()) == 0;
+}
+
 function getPublishTime(url) {
     if (demoCache[url] == null) {
         demoCache[url] = new Date().toString();
     }
     return demoCache[url];
-}
-
-function imageIdToUrl(linkUrl, imageUrlPrefix) {
-    let id = linkUrl.match(/\/[0-9]{3,4}\//)[0];
-    id = Number.parseInt(id.substring(1, id.length - 1));
-    return [imageUrlPrefix, 'i' + Math.floor(id / 1000), id + '.jpg'].join('/');
 }
 
 function postMessage(to, feed) {

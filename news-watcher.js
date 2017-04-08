@@ -43,7 +43,7 @@ function getTodayHolidays(url, callback) {
                             description: event['description'][0].replace(/(\r\n|\n|\r)/gm, "")
                         }
                     }).filter(isToday).reduce((previousValue, currentValue, i) => {
-                        return previousValue + '\n\n' + (i == 0 ? 'Поводы 🍻 имменно сегодня, <i>' +
+                        return previousValue + '\n\n' + (i == 0 ? 'Поводы 🍻 именно сегодня, <i>' +
                                 currentValue['day'] + '</i>\n\n' : '' ) + '<b>' + currentValue['title'] + '</b> - ' +
                             currentValue['description'];
                     }, ''),

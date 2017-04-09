@@ -2,11 +2,11 @@ const config = require('./config.js');
 const feedReader = require('feed-read');
 const request = require('request');
 const xml2js = require('xml2js').parseString;
+const md5 = require('md5');
 
 const AMQP = require('amqp');
+const Mongo = require('mongodb');
 const log = require('log4js').getLogger('news-service');
-
-let demoCache = {};
 
 let news = {
     'demo': getDemoNews,
@@ -24,7 +24,7 @@ function getDemoNews(url, callback) {
     feedReader(url, (err, feeds) => {
         callback(err, err ? feeds : feeds.filter(feed => feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)).map(feed => {
             feed.image_url = feed.content.match(/https:\/\/demotivators.to\/media.+\.thumbnail\.jpg/i)[0].replace('.thumbnail', '');
-            feed.published = getPublishTime(feed.image_url);
+            feed.published = new Date().toString();
             return feed;
         }));
     });
@@ -91,11 +91,24 @@ function isToday(item) {
     return item['day'].indexOf(new Date().getDate()) == 0;
 }
 
-function getPublishTime(url) {
-    if (demoCache[url] == null) {
-        demoCache[url] = new Date().toString();
-    }
-    return demoCache[url];
+function addNewsToCache(newsCache, callback) {
+    call((db, callback) => db.collection('news-cache').insertOne(newsCache, callback), callback);
+}
+
+function findNewsInCache(criteria, callback) {
+    log.info(criteria);
+    call((db, callback) => db.collection('news-cache').findOne(criteria, (err, newsCache) => {
+        callback(err, !err && !newsCache ? {} : newsCache)
+    }), callback);
+}
+
+function call(action, callback) {
+    callback = (callback ? callback : (err, result) => err ? log.error(err.stack) : 0);
+    Mongo.connect('mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database, (err, db) => {
+        err ? callback(err, null) : action(db, callback);
+        db.close();
+    });
+
 }
 
 function postMessage(to, feed) {
@@ -112,17 +125,30 @@ function postMessage(to, feed) {
         url: feed.link,
     };
 
-    log.debug(JSON.stringify(message));
+    let urlHash = md5(message.url);
+    findNewsInCache({id: urlHash}, (err, newsCache) => {
+        if (err) {
+            log.error(err);
+        }
 
-    const connection = AMQP.createConnection(config.mq.connection);
-    connection.on('error', err => log.error("Error from amqp: " + err.stack));
-    connection.on('ready', () =>
-        connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
-            exchange.publish('', JSON.stringify(message), {}, (isSend, err) => {
-                    err ? log.error(err.stack) : 0;
-                    connection.disconnect();
-                }
-            )
-        )
-    );
+        if (!newsCache.id) {
+            log.debug(message.url + "=> " + urlHash);
+            //log.debug(JSON.stringify(message));
+
+            addNewsToCache({id: urlHash, published: new Date().toString()}, (err) => err ? log.error(err) : 0);
+
+            const connection = AMQP.createConnection(config.mq.connection);
+            connection.on('error', err => log.error("Error from amqp: " + err.stack));
+            connection.on('ready', () =>
+                connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
+                    exchange.publish('', JSON.stringify(message), {}, (isSend, err) => {
+                            err ? log.error(err.stack) : 0;
+                            connection.disconnect();
+                        }
+                    )
+                )
+            );
+        }
+    });
+
 }

@@ -48,7 +48,7 @@ function getTodayHolidays(url, callback) {
                             currentValue['description'];
                     }, ''),
                     published: new Date().toString(),
-                    link: 'http://www.calend.ru/?d=' + new Date().format("yyyymmdd")
+                    link: encodeURI('http://www.calend.ru/?d=' + new Date().toDateString())
                 }
             ]);
         });

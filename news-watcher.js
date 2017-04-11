@@ -31,6 +31,7 @@ function getDemoNews(url, callback) {
 }
 
 function getTodayHolidays(url, callback) {
+    let today = new Date();
     request(url, {}, (err, response, body) => {
         err ? callback(err, null) : 0;
         xml2js(body, (err, result) => {
@@ -42,13 +43,13 @@ function getTodayHolidays(url, callback) {
                             title: event['title'][0].split('-')[1].trim(),
                             description: event['description'][0].replace(/(\r\n|\n|\r)/gm, "")
                         }
-                    }).filter(isToday).reduce((previousValue, currentValue, i) => {
+                    }).filter(item => isToday(item, today)).reduce((previousValue, currentValue, i) => {
                         return previousValue + '\n\n' + (i == 0 ? 'Поводы 🍻 именно сегодня, <i>' +
                                 currentValue['day'] + '</i>\n\n' : '' ) + '<b>' + currentValue['title'] + '</b> - ' +
                             currentValue['description'];
                     }, ''),
-                    published: new Date().toString(),
-                    link: encodeURI('http://www.calend.ru/?d=' + new Date().toDateString())
+                    published: today.toString(),
+                    link: getEventURL('http://www.calend.ru/day/', today)
                 }
             ]);
         });
@@ -83,8 +84,12 @@ function getMotorNews(url, callback) {
     });
 }
 
-function isToday(item) {
-    return item['day'].indexOf(new Date().getDate()) == 0;
+function getEventURL(prefix, date) {
+    return encodeURI(prefix+(date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getFullYear() + '/');
+}
+
+function isToday(item, date) {
+    return item['day'].indexOf(date.getDate()) == 0;
 }
 
 function addNewsToCache(newsCache, callback) {

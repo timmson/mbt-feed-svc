@@ -2,10 +2,10 @@ const config = require('./config.js');
 const newsWatcher = require('./news-watcher.js');
 
 newsWatcher.getFeed({
-    name: 'demo',
+    name: 'football',
     channel: '168739439',
-    url: 'http://demotivators.to/feeds/recent/',
+    url: 'https://www.championat.com/rss/article/football/russiapl/',
     cronTime: '0 0 10-20 * * *',
     period: 3600000,
-    limit: 1
+    limit: 15
 });

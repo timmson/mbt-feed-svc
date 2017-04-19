@@ -97,7 +97,6 @@ function addNewsToCache(newsCache, callback) {
 }
 
 function findNewsInCache(criteria, callback) {
-    log.info(criteria);
     call((db, callback) => db.collection('news-cache').findOne(criteria, (err, newsCache) => {
         callback(err, !err && !newsCache ? {} : newsCache)
     }), callback);
@@ -132,9 +131,10 @@ function postMessage(to, feed) {
             log.error(err);
         }
 
+        log.debug(message.url + "=> " + urlHash);
+
         if (!newsCache.id) {
-            log.debug(message.url + "=> " + urlHash);
-            //log.debug(JSON.stringify(message));
+            log.debug(JSON.stringify(message));
 
             addNewsToCache({id: urlHash, published: new Date().toString()}, (err) => err ? log.error(err) : 0);
 

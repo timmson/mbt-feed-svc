@@ -147,7 +147,7 @@ function postMessage(to, feed) {
             log.error(err);
         }
 
-        log.debug(message.url + "=> " + urlHash);
+        //log.debug(message.url + "=> " + urlHash);
 
         if (!newsCache.id) {
             log.debug(JSON.stringify(message));

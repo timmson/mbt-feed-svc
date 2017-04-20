@@ -128,7 +128,6 @@ function call(action, callback) {
 }
 
 function postMessage(to, feed) {
-    log.info(to + " <- " + feed.title);
     const message = {
         to: {
             id: to,

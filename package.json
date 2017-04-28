@@ -1,7 +1,7 @@
 {
-  "name": "net-service",
-  "version": "0.0.1",
-  "description": "Net collector",
+  "name": "mbt-feed-svc",
+  "version": "0.4.1",
+  "description": "Feed collector",
   "main": "service.js",
   "dependencies": {
     "amqp": "^0.2.6",

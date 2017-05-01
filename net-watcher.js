@@ -37,7 +37,7 @@ function getHosts(callback) {
                 });
 
                 lastStateHosts.filter(hostIp => !onlineHosts.map(host => host.ip).includes(hostIp)).forEach(hostIp => {
-                    log.debug(hostIp + ' is up');
+                    log.debug(hostIp + ' is down');
                     callback(null, hostIp + ' ☠');
                 });
 

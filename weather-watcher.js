@@ -8,7 +8,7 @@ module.exports.getWeather = function () {
     log.info("Update weather");
     weather.find({search: 'Moscow, RU', degreeType: 'C'}, function (err, result) {
         if (!err) {
-            postState(JSON.stringify(result));
+            postState(JSON.stringify(result['current']));
         } else {
             log.error(err.stack)
         }

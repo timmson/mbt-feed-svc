@@ -13,7 +13,7 @@ new CronJob({cronTime: config.cron, onTick: netWatcher.getNetworkState, start: t
 /**
  * Move to config
  */
-new CronJob({cronTime: '0 13 23 * * 0-4', onTick: weatherWatcher.getWeather, start: true});
+new CronJob({cronTime: '0 15 23 * * 0-4', onTick: weatherWatcher.getWeather, start: true});
 
 config.topics.forEach(topic => {
     log.info('Topic ' + topic.name + ' started at ' + topic.cronTime);

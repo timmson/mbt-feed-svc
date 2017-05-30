@@ -10,7 +10,10 @@ log.info('Service started');
 
 new CronJob({cronTime: config.cron, onTick: netWatcher.getNetworkState, start: true});
 
-new CronJob({cronTime: '0 * * * * *', onTick: weatherWatcher.getWeather, start: true});
+/**
+ * Move to config
+ */
+new CronJob({cronTime: '0 0 20 * * 0-4', onTick: weatherWatcher.getWeather, start: true});
 
 config.topics.forEach(topic => {
     log.info('Topic ' + topic.name + ' started at ' + topic.cronTime);

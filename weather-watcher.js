@@ -9,7 +9,6 @@ module.exports.getWeather = () => weather.find({
     lang: 'RU',
     degreeType: 'C'
 }, (err, result) => {
-    log.info("Update weather");
     if (!err) {
         let data = result[0]['forecast'].filter(row => row.date == getTomorrow())[0];
         postState('Завтра ' + data['low'] + 'C, ' + data['skytextday']);

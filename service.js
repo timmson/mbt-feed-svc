@@ -8,12 +8,14 @@ const log = require('log4js').getLogger('service');
 
 log.info('Service started');
 
+log.info('Topic NetworkState started at ' + config.cron);
 new CronJob({cronTime: config.cron, onTick: netWatcher.getNetworkState, start: true});
 
 /**
  * Move to config
  */
-new CronJob({cronTime: '0 15 23 * * 0-4', onTick: weatherWatcher.getWeather, start: true});
+log.info('Topic Weather started at 0 0 20 * 4-10 *');
+new CronJob({cronTime: '0 0 20 * 4-10 *', onTick: weatherWatcher.getWeather, start: true});
 
 config.topics.forEach(topic => {
     log.info('Topic ' + topic.name + ' started at ' + topic.cronTime);

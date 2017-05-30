@@ -3,7 +3,7 @@ const log = require('log4js').getLogger('weather-service');
 const weather = require('weather-js');
 const AMQP = require('amqp');
 
-const weather = {
+const weatherIcons= {
     'cloudy': '⛅'
 };
 
@@ -14,7 +14,7 @@ module.exports.getWeather = () => weather.find({
 }, (err, result) => {
     if (!err) {
         let data = result[0]['forecast'].filter(row => row.date == getTomorrow())[0];
-        postState('Завтра ' + data['low'] + '℃, ' + weather[data['skytextday'].toLowerCase()] || data['skytextday']);
+        postState('Завтра ' + data['low'] + '℃, ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
     } else {
         log.error(err.stack)
     }

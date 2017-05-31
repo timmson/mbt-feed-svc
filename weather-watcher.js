@@ -4,7 +4,8 @@ const weather = require('weather-js');
 const AMQP = require('amqp');
 
 const weatherIcons= {
-    'cloudy': '⛅'
+    'cloudy': '⛅',
+    'mostly cloudy': '🌥'
 };
 
 
@@ -14,7 +15,7 @@ module.exports.getWeather = () => weather.find({
 }, (err, result) => {
     if (!err) {
         let data = result[0]['forecast'].filter(row => row.date == getTomorrow())[0];
-        postState('Завтра ' + data['low'] + '℃, ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
+        postState('Завтра ' + data['low'] + '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
     } else {
         log.error(err.stack)
     }

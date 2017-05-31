@@ -31,9 +31,9 @@ function getHosts(callback) {
 
                 log.debug("Alive hosts: " + onlineHosts);
 
-                onlineHosts.filter(host => !lastStateHosts.includes(host.ip)).forEach(host => {
+                onlineHosts.filter(host => !lastStateHosts.includes(host.ip) && host.description === '?').forEach(host => {
                     log.debug(host.ip + ' is up');
-                    callback(null, host.ip + ' ' + (host.description === '?' ? host.mac : host.description) + ' 👻');
+                    callback(null, host.ip + ' ' + host.mac + ' 👻');
                 });
 
                 lastStateHosts.filter(hostIp => !onlineHosts.map(host => host.ip).includes(hostIp)).forEach(hostIp => {

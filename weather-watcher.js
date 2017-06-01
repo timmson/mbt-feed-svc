@@ -5,7 +5,8 @@ const AMQP = require('amqp');
 
 const weatherIcons= {
     'cloudy': '⛅',
-    'mostly cloudy': '🌥'
+    'mostly cloudy': '🌥',
+    'light rain' : '🌦'
 };
 
 

@@ -12,8 +12,7 @@ let news = {
     'demo': getDemoNews,
     'holidays': getTodayHolidays,
     'cars-auto': getAutoNews,
-    'cars-motor': getMotorNews,
-    'football': getFootBallNews,
+    'cars-motor': getMotorNews
 };
 
 module.exports.getFeed = function (topic) {
@@ -65,7 +64,7 @@ function getAutoNews(url, callback) {
                 title: entry['title'][0],
                 link: entry['link'][0],
                 published: entry['pubDate'][0],
-                image_url: entry['enclosure'][0]['$']['url']
+                image_url: entry['enclosure'] ? entry['enclosure'][0]['$']['url'] : null
             })));
         });
     });
@@ -83,21 +82,6 @@ function getMotorNews(url, callback) {
             })));
         });
     });
-}
-
-function getFootBallNews(url, callback) {
-    request(url, {}, (err, response, body) => {
-        err ? callback(err, null) : 0;
-        xml2js(body, (err, result) => {
-            err ? callback(err, null) : callback(err, result.rss.channel[0].item.map(entry => ({
-                title: entry['title'][0],
-                link: entry['link'][0],
-                published: entry['pubDate'][0],
-                image_url: entry['enclosure'][0]['$']['url']
-            })));
-        });
-    });
-
 }
 
 function getEventURL(prefix, date) {

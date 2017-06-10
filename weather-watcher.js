@@ -4,6 +4,7 @@ const weather = require('weather-js');
 const AMQP = require('amqp');
 
 const weatherIcons= {
+    'partly sunny' : '🌤',
     'cloudy': '⛅',
     'mostly cloudy': '🌥',
     'light rain' : '🌦'

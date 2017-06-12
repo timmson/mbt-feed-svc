@@ -7,7 +7,8 @@ const weatherIcons= {
     'partly sunny' : '🌤',
     'cloudy': '⛅',
     'mostly cloudy': '🌥',
-    'light rain' : '🌦'
+    'light rain' : '🌦',
+    'rain showers': '🌧'
 };
 
 

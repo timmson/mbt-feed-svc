@@ -18,7 +18,7 @@ module.exports.getWeather = () => weather.find({
 }, (err, result) => {
     if (!err) {
         let data = result[0]['forecast'].filter(row => row.date == getTomorrow())[0];
-        postState('Завтра ' + data['low'] + '℃ - ' +data['high']+ '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
+        postState('Завтра от ' + data['low'] + '℃ до ' +data['high']+ '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
     } else {
         log.error(err.stack)
     }

@@ -1,5 +1,6 @@
 const config = require('./config.js');
 const request = require('request');
+const AMQP = require('amqp');
 const log = require('log4js').getLogger('regard-service');
 
 const filter = [

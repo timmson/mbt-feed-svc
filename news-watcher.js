@@ -44,7 +44,7 @@ function getTodayHolidays(url, callback) {
                         }
                     }).filter(item => isToday(item, today)).reduce((previousValue, currentValue, i) => {
                         return previousValue + '\n\n' + (i == 0 ? 'Поводы 🍻 именно сегодня, <i>' +
-                                currentValue['day'] + '</i>\n\n' : '' ) + '<b>' + currentValue['title'] + '</b> - ' +
+                            currentValue['day'] + '</i>\n\n' : '' ) + '<b>' + currentValue['title'] + '</b> - ' +
                             currentValue['description'];
                     }, ''),
                     published: today.toString(),
@@ -84,7 +84,7 @@ function getMotorNews(url, callback) {
 }
 
 function getEventURL(prefix, date) {
-    return encodeURI(prefix+(date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getFullYear() + '/');
+    return encodeURI(prefix + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getFullYear() + '/');
 }
 
 function isToday(item, date) {
@@ -140,7 +140,9 @@ function postMessage(to, feed) {
                     'Content-Length': Buffer.byteLength(body)
                 }
             }, (err, response, body) => {
-                log.error(err);
+                if (err) {
+                    log.error(err);
+                }
             });
         }
     });

@@ -4,7 +4,6 @@ const request = require('request');
 const xml2js = require('xml2js').parseString;
 const md5 = require('md5');
 
-const AMQP = require('amqp');
 const Mongo = require('mongodb');
 const log = require('log4js').getLogger('news-service');
 
@@ -130,24 +129,19 @@ function postMessage(to, feed) {
             log.error(err);
         }
 
-        //log.debug(message.url + "=> " + urlHash);
-
         if (!newsCache.id) {
-            log.debug(JSON.stringify(message));
-
-            addNewsToCache({id: urlHash, published: new Date().toString()}, (err) => err ? log.error(err) : 0);
-
-            const connection = AMQP.createConnection(config.mq.connection);
-            connection.on('error', err => log.error("Error from amqp: " + err.stack));
-            connection.on('ready', () =>
-                connection.exchange(config.mq.exchange, {type: 'fanout', durable: true, autoDelete: false}, exchange =>
-                    exchange.publish('', JSON.stringify(message), {}, (isSend, err) => {
-                            err ? log.error(err.stack) : 0;
-                            connection.disconnect();
-                        }
-                    )
-                )
-            );
+            log.info(message.to.username + " <- " + message.image);
+            let body = JSON.stringify(message);
+            request.post({
+                url: 'http://' + config.telegramSvc.host + ':' + config.telegramSvc.port + '/send',
+                body: body,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(body)
+                }
+            }, (err, response, body) => {
+                log.error(err);
+            });
         }
     });
 

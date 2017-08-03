@@ -131,6 +131,9 @@ function postMessage(to, feed) {
 
         if (!newsCache.id) {
             log.info(message.to.username + " <- " + message.image);
+
+            addNewsToCache({id: urlHash, published: new Date().toString()}, (err) => err ? log.error(err) : 0);
+
             let body = JSON.stringify(message);
             request.post({
                 url: 'http://' + config.telegramSvc.host + ':' + config.telegramSvc.port + '/send',

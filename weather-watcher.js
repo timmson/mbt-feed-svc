@@ -1,7 +1,6 @@
 const config = require('./config.js');
 const log = require('log4js').getLogger('weather-service');
 const weather = require('weather-js');
-const AMQP = require('amqp');
 
 const weatherIcons= {
     'partly sunny' : '🌤',
@@ -18,7 +17,7 @@ module.exports.getWeather = () => weather.find({
     degreeType: 'C'
 }, (err, result) => {
     if (!err) {
-        let data = result[0]['forecast'].filter(row => row.date == getTomorrow())[0];
+        let data = result[0]['forecast'].filter(row => row.date === getTomorrow())[0];
         postState('Завтра от ' + data['low'] + ' до ' +data['high']+ '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
     } else {
         log.error(err.stack)

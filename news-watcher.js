@@ -1,6 +1,6 @@
 const config = require('./config.js');
 const feedReader = require('feed-read');
-const request = require('request');
+const request = require('request-promise');
 const xml2js = require('xml2js').parseString;
 const md5 = require('md5');
 
@@ -88,7 +88,7 @@ function getEventURL(prefix, date) {
 }
 
 function isToday(item, date) {
-    return item['day'].indexOf(date.getDate()) == 0;
+    return item['day'].indexOf(date.getDate()) === 0;
 }
 
 function addNewsToCache(newsCache, callback) {
@@ -142,11 +142,7 @@ function postMessage(to, feed) {
                     'Content-Type': 'application/json',
                     'Content-Length': Buffer.byteLength(body)
                 }
-            }, (err, response, body) => {
-                if (err) {
-                    log.error(err);
-                }
-            });
+            }).catch(log.error);
         }
     });
 

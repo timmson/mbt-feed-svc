@@ -1,9 +1,8 @@
 const config = require('./config.js');
-
-const request = require('request');
-const Mongo = require('mongodb');
-const AMQP = require('amqp');
 const log = require('log4js').getLogger('net-service');
+const request = require('request-promise');
+const Mongo = require('mongodb');
+
 
 module.exports.getNetworkState = function () {
     log.info("Update network state");

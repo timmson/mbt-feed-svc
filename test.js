@@ -1,6 +1,10 @@
 const config = require('./config.js');
 const NetApi = require('./modules/net-api.js');
+const MessageApi = require('./modules/message-api.js');
+const messageApi = new MessageApi(config.telegramSvc);
 
 const netApi = new NetApi(config);
 
-netApi.getUnknownHosts().then(console.log);
+netApi.getUnknownHosts().then(
+    hosts => hosts.forEach(host => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: host})).catch(console.error)
+).catch(console.error);

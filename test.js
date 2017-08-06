@@ -1,4 +1,4 @@
-const newsWatcher = require('./news-watcher.js');
+const newsWatcher = require('./modules/news-api.js');
 newsWatcher.getFeed(
     {
         name: 'demo',

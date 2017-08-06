@@ -7,7 +7,7 @@ function NetworkApi(config) {
     this.mongoUrl = 'mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database
 }
 
-NetworkApi.prototype.getUnknownHosts = function (callback) {
+NetworkApi.prototype.getUnknownHosts = function () {
     return new Promise((resolve, reject) => {
         this.connect().then(
             db => this.loadNetworkState(db).then(

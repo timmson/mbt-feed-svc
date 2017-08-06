@@ -15,10 +15,9 @@ log.info('Service started');
 
 log.info('Topic NetworkState started at ' + config.cron);
 new CronJob({
-    cronTime: config.cron, onTick: () => {
-        netApi.getUnknownHosts().then(
-            hosts => hosts.forEach(host => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: host})).catch(log.error)
-        ).catch(log.error);
+    cronTime: config.cron,
+    onTick: () => {
+        netApi.notifyAboutUnknownHosts((message) => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: message}).catch(log.error));
     }, start: true
 });
 
@@ -29,8 +28,7 @@ log.info('Topic Weather started at 0 0 20 * 4-10 *');
 new CronJob({
     cronTime: '0 0 20 * 4-10 *',
     onTick: () => {
-        WeatherApi.getWeather().then(forecast => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: forecast}).catch(log.error)
-        ).catch(log.error);
+        WeatherApi.notifyAboutWeather((text) => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: text}).catch(log.error));
     },
     start: true
 });
@@ -41,7 +39,7 @@ config.topics.forEach(topic => {
         {
             cronTime: topic.cronTime,
             onTick: () => {
-                NewsApi.sendMessages(topic).then(messages => messages.forEach(messageApi.sendMessage).catch(log.error)).catch(log.error)
+                NewsApi.notify(topic, (message) => messageApi.sendMessage(message).catch(log.error));
             },
             start: true
         }

@@ -10,19 +10,17 @@ const weatherIcons = {
 };
 
 
-module.exports.getWeather = function () {
-    return new Promise((resolve, reject) => {
-        weather.find({
-            search: 'Moscow, Russia',
-            degreeType: 'C'
-        }, (err, result) => {
-            if (err) {
-                reject(err);
-            }
-            let data = result[0]['forecast'].filter(row => row.date === getTomorrow())[0];
-            resolve('Завтра от ' + data['low'] + ' до ' + data['high'] + '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
-        });
-    })
+module.exports.notifyAboutWeather = function (notify) {
+    weather.find({
+        search: 'Moscow, Russia',
+        degreeType: 'C'
+    }, (err, result) => {
+        if (err) {
+            reject(err);
+        }
+        let data = result[0]['forecast'].filter(row => row.date === getTomorrow())[0];
+        notify('Завтра от ' + data['low'] + ' до ' + data['high'] + '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));
+    });
 };
 
 function getTomorrow() {

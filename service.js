@@ -1,5 +1,5 @@
 const config = require('./config.js');
-const log = require('log4js');
+const log = require('log4js').getLogger();
 
 const MessageApi = require('./modules/message-api.js');
 const NetApi = require('./modules/net-api.js');

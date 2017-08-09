@@ -57,7 +57,7 @@ NetworkApi.prototype.connect = function () {
 };
 
 NetworkApi.prototype.scanNetwork = function () {
-    return new Promise((resolve, reject) => request(this.hostSVCurl).then(body => resolve(JSON.parse(body))).catch(reject));
+    return new Promise((resolve, reject) => request(this.hostSVCurl).then(body => resolve(JSON.parse(body))).catch(err => reject(err)));
 };
 
 module.exports = NetworkApi;

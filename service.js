@@ -10,14 +10,14 @@ const CronJob = require('cron').CronJob;
 
 const messageApi = new MessageApi(config.telegramSvc);
 const netApi = new NetApi(config);
-const newsApi = new NewsApi();
+const newsApi = new NewsApi(config);
 
 log.info('Service started');
 
 log.info('Topic NetworkState started at ' + config.cron);
 new CronJob({
     cronTime: config.cron,
-    onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: text}).catch(log.error)),
+    onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: text}).catch(err => log.error(err))),
     start: true
 });
 
@@ -27,7 +27,7 @@ new CronJob({
 log.info('Topic Weather started at 0 0 20 * 4-10 *');
 new CronJob({
     cronTime: '0 0 20 * 4-10 *',
-    onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: text}).catch(log.error)),
+    onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: text}).catch(err => log.error(err))),
     start: true
 });
 
@@ -36,7 +36,7 @@ config.topics.forEach(topic => {
     new CronJob(
         {
             cronTime: topic.cronTime,
-            onTick: () => newsApi.notifyAboutNews(topic, message => messageApi.sendMessage(message).catch(log.error)),
+            onTick: () => newsApi.notifyAboutNews(topic, message => messageApi.sendMessage(message).catch(err => log.error(err))),
             start: true
         }
     );

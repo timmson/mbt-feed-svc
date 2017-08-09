@@ -4,7 +4,6 @@
   "description": "Feed collector",
   "main": "service.js",
   "dependencies": {
-    "async": "2.5.0",
     "cron": "^1.2.1",
     "feed-read": "0.0.1",
     "log4js": "^1.1.0",

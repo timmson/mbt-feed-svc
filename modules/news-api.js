@@ -1,5 +1,4 @@
 const log = require('log4js').getLogger('news');
-const async = require('async');
 const feedReader = require('feed-read');
 const request = require('request-promise');
 const xml2js = require('xml2js').parseString;
@@ -13,33 +12,30 @@ let news = {
     'cars-motor': getMotorNews
 };
 
-function NewsApi() {
-
+function NewsApi(config) {
+    this.mongoUrl = 'mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database;
 }
 
 NewsApi.prototype.notifyAboutNews = function (topic, notify) {
     this.connect().then(
-        db => {
-            this.getFeeds().then(
+        db =>
+            this.getFeeds(topic).then(
                 feeds =>
-                    async.each(feeds.slice(0, topic.limit).reverse(), (feed, callback) => {
-                        this.getMessage(db, feed, topic).then(message => callback(null, message)).catch(callback(err, null));
-                    }, (err, result) => {
-                        notify(result);
+                    feeds.slice(0, topic.limit).reverse().forEach((feed, idx, arr) => {
+                        this.notifyAboutFeed(db, feed, topic, notify).then(() => (idx === arr.length - 1) ? db.close() : 0).catch(err => log.error(err));
                     })
-            ).catch(log.error);
-            db.close();
-        }).catch(log.error);
+            ).catch(err => log.error(err))
+    ).catch(err => log.error(err));
 };
 
-NewsApi.prototype.getMessage = function (db, feed, topic) {
+NewsApi.prototype.notifyAboutFeed = function (db, feed, topic, notify) {
     return new Promise((resolve, reject) => {
         const urlHash = md5(feed.link);
         this.findNewsInCache(db, {id: urlHash}).then(
             newsCache => {
                 if (!newsCache.id) {
-                    this.addNewsToCache(db, {id: urlHash, published: new Date().toString()}).catch(reject);
-                    resolve({
+                    this.addNewsToCache(db, {id: urlHash, published: new Date().toString()}).catch(err => reject(err));
+                    notify({
                         to: {
                             id: topic.channel,
                             username: topic.channel
@@ -50,18 +46,17 @@ NewsApi.prototype.getMessage = function (db, feed, topic) {
                         image: feed.image_url,
                         url: feed.link
                     });
-                } else {
-                    resolve(null);
                 }
+                resolve();
             }
-        ).catch(reject);
+        ).catch(err => reject(err));
     });
 };
 
 
 NewsApi.prototype.getFeeds = function (topic) {
     if (news.hasOwnProperty(topic.name)) {
-        return news[topic.name](topic.url)
+        return news[topic.name](topic.url);
     } else {
         return new Promise((resolve, reject) => feedReader(topic.url, (err, feeds) => err ? reject(err) : resolve(feeds)));
     }
@@ -118,7 +113,7 @@ function getTodayHolidays(url) {
                     }
                 ]);
             })
-        ).catch(reject);
+        ).catch(err => reject(err));
     });
 }
 
@@ -133,7 +128,7 @@ function getAutoNews(url) {
                     image_url: entry['enclosure'] ? entry['enclosure'][0]['$']['url'] : null
                 })));
             })
-        ).catch(reject);
+        ).catch(err => reject(err));
     });
 }
 
@@ -148,7 +143,7 @@ function getMotorNews(url) {
                     image_url: entry['media:content'][0]['$']['url']
                 })));
             })
-        ).catch(reject);
+        ).catch(err => reject(err));
     });
 }
 

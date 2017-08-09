@@ -1,3 +1,4 @@
+const log = require('log4js').getLogger('weather');
 const weather = require('weather-js');
 
 const weatherIcons = {
@@ -16,7 +17,7 @@ module.exports.notifyAboutWeather = function (notify) {
         degreeType: 'C'
     }, (err, result) => {
         if (err) {
-            reject(err);
+            log.error(err);
         }
         let data = result[0]['forecast'].filter(row => row.date === getTomorrow())[0];
         notify('Завтра от ' + data['low'] + ' до ' + data['high'] + '℃ ' + (weatherIcons[data['skytextday'].toLowerCase()] || data['skytextday']));

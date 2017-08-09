@@ -1,3 +1,4 @@
+const log = require('log4js').getLogger('news');
 const async = require('async');
 const feedReader = require('feed-read');
 const request = require('request-promise');
@@ -16,21 +17,19 @@ function NewsApi() {
 
 }
 
-NewsApi.prototype.sendMessages = function (topic) {
-    return new Promise((resolve, reject) => {
-        this.connect().then(
-            db => {
-                this.getFeeds().then(
-                    feeds =>
-                        async.each(feeds.slice(0, topic.limit).reverse(), (feed, callback) => {
-                            this.getMessage(db, feed, topic).then(message => callback(null, message)).catch(callback(err, null));
-                        }, (err, result) => {
-                            resolve(result);
-                        })
-                ).catch(reject);
-                db.close();
-            }).catch(reject);
-    });
+NewsApi.prototype.notifyAboutNews = function (topic, notify) {
+    this.connect().then(
+        db => {
+            this.getFeeds().then(
+                feeds =>
+                    async.each(feeds.slice(0, topic.limit).reverse(), (feed, callback) => {
+                        this.getMessage(db, feed, topic).then(message => callback(null, message)).catch(callback(err, null));
+                    }, (err, result) => {
+                        notify(result);
+                    })
+            ).catch(log.error);
+            db.close();
+        }).catch(log.error);
 };
 
 NewsApi.prototype.getMessage = function (db, feed, topic) {

@@ -1,7 +1,14 @@
 const config = require('./config.js');
-const WeatherApi = require('./modules/weather-api.js');
+const NewsApi = require('./modules/news-api.js');
 const MessageApi = require('./modules/message-api.js');
 
 const messageApi = new MessageApi(config.telegramSvc);
+const newsApi = new NewsApi();
 
-WeatherApi.notifyAboutWeather((text) => messageApi.sendMessage({to: config.to, type: 'text', version: '2', text: text}).catch(console.error));
+newsApi.notifyAboutNews({
+    name: 'demo',
+    channel: '@tmsnInstaMemes',
+    url: 'http://demotivators.to/feeds/recent/',
+    cronTime: '0 25 10-20 * * *',
+    limit: 10
+}, message => messageApi.sendMessage(message).catch(console.error));

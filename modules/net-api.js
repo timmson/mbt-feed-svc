@@ -1,4 +1,4 @@
-const log = require('log4js').getLogger('net-service');
+const log = require('log4js').getLogger('net');
 const request = require('request-promise');
 const Mongo = require('mongodb');
 

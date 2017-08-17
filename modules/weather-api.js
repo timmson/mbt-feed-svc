@@ -2,9 +2,11 @@ const log = require('log4js').getLogger('weather');
 const weather = require('weather-js');
 
 const weatherIcons = {
-    'partly sunny': '🌤',
-    'cloudy': '⛅',
-    'mostly cloudy': '🌥',
+    'sunny': '☀',
+    'mostly sunny': '🌤',
+    'partly sunny': '⛅️',
+    'cloudy': '🌥',
+    'mostly cloudy': '☁️',
     'light rain': '🌦',
     'rain showers': '🌧',
     't-storms': '⛈'

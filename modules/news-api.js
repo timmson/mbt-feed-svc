@@ -44,7 +44,8 @@ NewsApi.prototype.notifyAboutFeed = function (db, feed, topic, notify) {
                         type: feed.image_url ? 'image_link' : 'link',
                         text: feed.title,
                         image: feed.image_url,
-                        url: feed.link
+                        url: feed.link,
+                        isLike: (topic.name === 'demo')
                     });
                 }
                 resolve();

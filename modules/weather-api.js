@@ -8,8 +8,9 @@ const weatherIcons = {
     'cloudy': '🌥',
     'mostly cloudy': '☁️',
     'light rain': '🌦',
-    'rain showers': '🌧',
-    't-storms': '⛈'
+    'rain': '🌧',
+    'rain showers': '⛈',
+    't-storms': '🌪'
 };
 
 

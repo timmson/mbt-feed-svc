@@ -10,7 +10,8 @@ const weatherIcons = {
     'light rain': '🌦',
     'rain': '🌧',
     'rain showers': '⛈',
-    't-storms': '🌪'
+    't-storms': '🌪',
+    'light snow' : '🌨'
 };
 
 

@@ -1,0 +1,17 @@
+version: '2'
+services:
+   mbt-feed-svc:
+     image: mbt-feed-svc
+     container_name: feed-svc-srv
+     build:
+       context: .
+       args:
+         - username=user
+         - config_server
+         - config_path=/mbt-feed-svc/config.js
+     restart: always
+
+networks:
+  default:
+    external:
+      name: mynet

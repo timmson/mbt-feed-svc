@@ -1,6 +1,4 @@
 *.iml
 .idea/
-config.js
-node_modules
-npm-debug.log
-log
+src/config.js
+src/node_modules

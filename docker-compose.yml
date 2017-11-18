@@ -1,15 +1,24 @@
 version: '2'
 services:
-   mbt-feed-svc:
-     image: mbt-feed-svc
-     container_name: feed-svc-srv
-     build:
-       context: .
-       args:
-         - username=user
-         - config_server
-         - config_path=/mbt-feed-svc/config.js
-     restart: always
+  mbt-feed-svc:
+    image: mbt-feed-svc
+    container_name: feed-svc-srv
+    build:
+      context: feed-svc/
+      args:
+        - username=user
+        - config_server
+        - config_path=/mbt-feed-svc/config.js
+    restart: always
+
+  mbt-mongo-db:
+    image: mbt-mongo-db
+    container_name: mongo-db-srv
+    build:
+      context: mongo-db/
+    ports:
+      - 27017:27017
+    restart: always
 
 networks:
   default:

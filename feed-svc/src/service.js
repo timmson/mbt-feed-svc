@@ -1,4 +1,6 @@
 const config = require('./config.js');
+config.mongo.url = process.env['db'];
+
 const log = require('log4js').getLogger();
 
 const MessageApi = require('./modules/message-api.js');
@@ -10,7 +12,7 @@ const CronJob = require('cron').CronJob;
 
 const messageApi = new MessageApi(config.telegramSvc);
 const netApi = new NetApi(config);
-const newsApi = new NewsApi(config);
+const newsApi = new NewsApi(config.mongo.url);
 
 log.info('Service started');
 

@@ -8,12 +8,11 @@ const Mongo = require('mongodb');
 let news = {
     'demo': getDemoNews,
     'holidays': getTodayHolidays,
-    'cars-auto': getAutoNews,
     'cars-motor': getMotorNews
 };
 
-function NewsApi(config) {
-    this.mongoUrl = 'mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database;
+function NewsApi(mongoUrl) {
+    this.mongoUrl = mongoUrl;
 }
 
 NewsApi.prototype.notifyAboutNews = function (topic, notify) {
@@ -113,21 +112,6 @@ function getTodayHolidays(url) {
                         link: getEventURL('http://www.calend.ru/day/', today)
                     }
                 ]);
-            })
-        ).catch(err => reject(err));
-    });
-}
-
-function getAutoNews(url) {
-    return new Promise((resolve, reject) => {
-        request(url).then(
-            body => xml2js(body, (err, result) => {
-                err ? reject(err) : resolve(result.rss.channel[0].item.map(entry => ({
-                    title: entry['title'][0],
-                    link: entry['link'][0],
-                    published: entry['pubDate'][0],
-                    image_url: entry['enclosure'] ? entry['enclosure'][0]['$']['url'] : null
-                })));
             })
         ).catch(err => reject(err));
     });

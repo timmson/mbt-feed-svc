@@ -9,6 +9,7 @@ services:
         - username=user
         - config_server
         - config_path=/mbt-feed-svc/config.js
+        - db=mongodb://mongo-db-srv:27017/bot-log
     restart: always
 
   mbt-mongo-db:

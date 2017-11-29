@@ -4,7 +4,7 @@ const Mongo = require('mongodb');
 
 function NetworkApi(config) {
     this.hostSVCurl = 'http://' + config.hostSvc.host + ':' + config.hostSvc.port + '/system/net';
-    this.mongoUrl = 'mongodb://' + config.mongo.host + ':' + config.mongo.port + '/' + config.mongo.database
+    this.mongoUrl = config.mongo.url
 }
 
 NetworkApi.prototype.notifyAboutUnknownHosts = function (notify) {

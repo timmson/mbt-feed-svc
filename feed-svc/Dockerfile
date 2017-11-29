@@ -4,6 +4,7 @@ LABEL maintaner="Krotov Artem <timmson666@mail.ru>"
 ARG username
 ARG config_server
 ARG config_path
+ARG db
 
 RUN useradd ${username} -s /bin/bash -G sudo -md /home/${username} && \
     sed -i.bkp -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers && \
@@ -17,4 +18,6 @@ RUN wget ${config_server}${config_path} && npm i && chown -R ${username}:${usern
 
 USER ${username}
 
-CMD ["npm", "start"]
+ENV db ${db}
+
+CMD ["nodejs", "service.js"]

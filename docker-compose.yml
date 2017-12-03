@@ -21,6 +21,11 @@ services:
       - 27017:27017
     restart: always
 
+  mbt-feed-db:
+    image: timmson/mbt-platform-v2:mongo
+    container_name: feed-db-srv
+    restart: always
+
 networks:
   default:
     external:

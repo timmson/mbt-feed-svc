@@ -9,24 +9,10 @@ services:
         - username=user
         - config_server
         - config_path=/mbt-feed-svc/config.js
-        - db=mongodb://mongo-db-srv:27017/bot-log
-    restart: always
-
-  mbt-mongo-db:
-    image: mbt-mongo-db
-    container_name: mongo-db-srv
-    build:
-      context: mongo-db/
-    ports:
-      - 27017:27017
+        - db=mongodb://feed-db-srv:27017/bot-log
     restart: always
 
   mbt-feed-db:
     image: timmson/mbt-platform-v2:mongo
     container_name: feed-db-srv
     restart: always
-
-networks:
-  default:
-    external:
-      name: mynet

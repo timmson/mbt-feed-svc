@@ -4,7 +4,7 @@ services:
     image: mbt-feed-svc
     container_name: feed-svc-srv
     build:
-      context: feed-svc/
+      context: .
       args:
         - username=user
         - config_server

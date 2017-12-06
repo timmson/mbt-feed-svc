@@ -16,7 +16,7 @@ NetworkApi.prototype.notifyAboutUnknownHosts = function (notify) {
                     onlineHosts => {
                         let lastStateHosts = networkState.hosts;
 
-                        log.debug("Alive hosts: " + onlineHosts);
+                        log.debug("Alive hosts: " + JSON.stringify(onlineHosts));
 
                         onlineHosts.filter(host => !lastStateHosts.includes(host.ip) && host.description === '?').forEach(host => {
                             log.info(host.ip + ' is up');

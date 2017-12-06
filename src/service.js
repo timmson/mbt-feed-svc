@@ -15,9 +15,9 @@ const newsApi = new NewsApi(config.mongo.url);
 
 log.info("Service started");
 
-log.info("Topic NetworkState started at " + config.cron);
+log.info("Topic NetworkState started at " + config.cron.network);
 new CronJob({
-    cronTime: config.cron,
+    cronTime: config.cron.network,
     onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
     start: true
 });
@@ -25,9 +25,9 @@ new CronJob({
 /**
  * Move to config
  */
-log.info("Topic Weather started at 0 0 20 * 4-10 *");
+log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({
-    cronTime: "0 0 20 * 4-10 *",
+    cronTime: config.cron.weather,
     onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
     start: true
 });

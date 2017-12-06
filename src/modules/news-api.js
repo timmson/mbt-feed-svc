@@ -7,8 +7,7 @@ const Mongo = require('mongodb');
 
 let news = {
     'demo': getDemoNews,
-    'holidays': getTodayHolidays,
-    'cars-motor': getMotorNews
+    'holidays': getTodayHolidays
 };
 
 function NewsApi(mongoUrl) {
@@ -112,21 +111,6 @@ function getTodayHolidays(url) {
                         link: getEventURL('http://www.calend.ru/day/', today)
                     }
                 ]);
-            })
-        ).catch(err => reject(err));
-    });
-}
-
-function getMotorNews(url) {
-    return new Promise((resolve, reject) => {
-        request(url).then(
-            body => xml2js(body, (err, result) => {
-                err ? reject(err) : resolve(result.feed.entry.filter(e => e['media:content']).map(entry => ({
-                    title: entry['title'][0],
-                    link: entry['link'][0]['$']['href'],
-                    published: entry['updated'][0],
-                    image_url: entry['media:content'][0]['$']['url']
-                })));
             })
         ).catch(err => reject(err));
     });

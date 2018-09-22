@@ -1,21 +1,57 @@
 const log = require('log4js').getLogger('message');
-const request = require('request-promise');
 
-function MessageApi(msgSvc) {
-    this.url = 'http://' + msgSvc.host + ':' + msgSvc.port
+function MessageApi(telegramBot) {
+    this.telegramBot = telegramBot
 }
 
-MessageApi.prototype.sendMessage = function (message) {
-    let body = JSON.stringify(message);
-    log.debug(body);
-    return request.post({
-        url: this.url + '/send',
-        body: body,
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body)
+MessageApi.prototype.sendMessage = async function (message) {
+    const replyMarkup = message.isLike ? getLikeButton(getRandomInt(0, 15)) : (message.url ? JSON.stringify({
+        inline_keyboard: [[{
+            text: "🌍",
+            url: message.url
+        }]]
+    }) : null);
+    try {
+        switch (message.type) {
+            case "text":
+                log.info(message.to.username + " <- " + "[text:" + message.text + "]");
+                await this.telegramBot.sendMessage(message.to.id, message.text, {});
+                break;
+            case "link":
+                log.info(message.to.username + " <- " + "[link:" + message.text + "]");
+                await this.telegramBot.sendMessage(message.to.id, message.text, {
+                    parse_mode: "HTML",
+                    reply_markup: replyMarkup
+                });
+                break;
+            case "image_link":
+                log.info(message.to.username + " <- " + "[image:" + message.image + "]");
+                await this.telegramBot.sendPhoto(message.to.id, r(message.image), {
+                    caption: message.text,
+                    reply_markup: replyMarkup
+                });
+                break;
+
+            case "video_link":
+                log.info(message.to.username + " <- " + "[video:" + message.video + "]");
+                await this.telegramBot.sendPhoto(message.to.id, r(message.video), {
+                    caption: message.text,
+                    reply_markup: replyMarkup
+                });
+                break;
         }
-    });
+    } catch (err) {
+        log.error(err);
+    }
 };
+
+
+function getLikeButton(cnt) {
+    return JSON.stringify({inline_keyboard: [[{text: "👍" + cnt, callback_data: "" + (cnt + 1)}]]});
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
 module.exports = MessageApi;

@@ -32,10 +32,9 @@ new CronJob({
 });
 
 log.info("Topic Insta started at " + config.instagram.cronTime);
-instaApi.notifyAboutMemes().then(messages => messages.forEach(message => messageApi.sendMessage(message).catch(err => log.error(err)))).catch(err => log.error(err));
 new CronJob({
     cronTime: config.instagram.cronTime,
-    onTick: () => instaApi.notifyAboutMemes(message => messageApi.sendMessage(message).catch(err => log.error(err))),
+    onTick: () => instaApi.notifyAboutMemes(messages => messages.forEach(messageApi.sendMessage).catch(err => log.error(err))),
     start: true
 });
 

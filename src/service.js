@@ -1,6 +1,6 @@
 const config = require("./config.js");
 config.mongo = { url : process.env["db"]};
-const log = require("log4js").getLogger();
+const log = require("log4js").getLogger("main");
 
 const MessageApi = require("./modules/message-api.js");
 const NetApi = require("./modules/net-api.js");
@@ -17,39 +17,38 @@ const netApi = new NetApi(config);
 const instaApi = new InstaApi(config.instagram);
 const newsApi = new NewsApi(config.mongo.url);
 
-// log.info("Topic NetworkState started at " + config.cron.network);
-// new CronJob({
-//     cronTime: config.cron.network,
-//     onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
-//     start: true
-// });
-//
-// log.info("Topic Weather started at " + config.cron.weather);
-// new CronJob({
-//     cronTime: config.cron.weather,
-//     onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
-//     start: true
-// });
+log.info("Topic NetworkState started at " + config.cron.network);
+new CronJob({
+    cronTime: config.cron.network,
+    onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
+    start: true
+});
+
+log.info("Topic Weather started at " + config.cron.weather);
+new CronJob({
+    cronTime: config.cron.weather,
+    onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
+    start: true
+});
 
 log.info("Topic Insta started at " + config.instagram.cronTime);
-instaApi.notifyAboutMemes().catch(err => log.error(err));
-//instaApi.notifyAboutMemes().then(messages => messages.forEach(message => messageApi.sendMessage(message).catch(err => log.error(err)))).catch(err => log.error(err));
-// new CronJob({
-//     cronTime: config.instagram.cronTime,
-//     onTick: () => instaApi.notifyAboutMemes(message => messageApi.sendMessage(message).catch(err => log.error(err))),
-//     start: true
-// });
+instaApi.notifyAboutMemes().then(messages => messages.forEach(message => messageApi.sendMessage(message).catch(err => log.error(err)))).catch(err => log.error(err));
+new CronJob({
+    cronTime: config.instagram.cronTime,
+    onTick: () => instaApi.notifyAboutMemes(message => messageApi.sendMessage(message).catch(err => log.error(err))),
+    start: true
+});
 
-// config.topics.forEach(topic => {
-//     log.info("Topic " + topic.name + " started at " + topic.cronTime);
-//     new CronJob(
-//         {
-//             cronTime: topic.cronTime,
-//             onTick: () => newsApi.notifyAboutNews(topic, message => messageApi.sendMessage(message).catch(err => log.error(err))),
-//             start: true
-//         }
-//     );
-// });
+config.topics.forEach(topic => {
+    log.info("Topic " + topic.name + " started at " + topic.cronTime);
+    new CronJob(
+        {
+            cronTime: topic.cronTime,
+            onTick: () => newsApi.notifyAboutNews(topic, message => messageApi.sendMessage(message).catch(err => log.error(err))),
+            start: true
+        }
+    );
+});
 
 telegramBot.on("callback_query", async message => {
     try {

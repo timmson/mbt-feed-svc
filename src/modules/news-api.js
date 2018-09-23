@@ -1,6 +1,6 @@
 const log = require('log4js').getLogger('news');
 const feedReader = require('feed-read');
-const request = require('request-promise');
+const request = require("request");
 const xml2js = require('xml2js').parseString;
 const md5 = require('md5');
 const Mongo = require('mongodb');
@@ -92,8 +92,9 @@ function getDemoNews(url) {
 function getTodayHolidays(url) {
     return new Promise((resolve, reject) => {
         let today = new Date();
-        request(url).then(
-            body => xml2js(body, (err, result) => {
+        request(url, (err, response, body) => {
+            if (err) reject(err);
+            xml2js(body, (err, result) => {
                 err ? reject(err) : resolve([
                     {
                         title: result.rss.channel[0].item.map(event => {
@@ -104,7 +105,7 @@ function getTodayHolidays(url) {
                             }
                         }).filter(item => isToday(item, today)).reduce((previousValue, currentValue, i) => {
                             return previousValue + '\n\n' + (i === 0 ? 'Поводы 🍻 именно сегодня, <i>' +
-                                currentValue['day'] + '</i>\n\n' : '' ) + '<b>' + currentValue['title'] + '</b> - ' +
+                                currentValue['day'] + '</i>\n\n' : '') + '<b>' + currentValue['title'] + '</b> - ' +
                                 currentValue['description'];
                         }, ''),
                         published: today.toString(),
@@ -112,7 +113,7 @@ function getTodayHolidays(url) {
                     }
                 ]);
             })
-        ).catch(err => reject(err));
+        });
     });
 }
 

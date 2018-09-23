@@ -1,9 +1,9 @@
-const log = require('log4js').getLogger('net');
-const request = require('request-promise');
-const Mongo = require('mongodb');
+const log = require("log4js").getLogger("net");
+const request = require("request");
+const Mongo = require("mongodb");
 
 function NetworkApi(config) {
-    this.hostSVCurl = 'http://' + config.hostSvc.host + ':' + config.hostSvc.port + '/system/net';
+    this.hostSVCurl = "http://" + config.hostSvc.host + ":" + config.hostSvc.port + "/system/net";
     this.mongoUrl = config.mongo.url
 }
 
@@ -11,24 +11,24 @@ NetworkApi.prototype.notifyAboutUnknownHosts = function (notify) {
     this.connect().then(
         db => this.loadNetworkState(db).then(
             networkState => {
-                networkState.hosts = networkState.hasOwnProperty('hosts') ? networkState.hosts : [];
+                networkState.hosts = networkState.hasOwnProperty("hosts") ? networkState.hosts : [];
                 this.scanNetwork().then(
                     onlineHosts => {
                         let lastStateHosts = networkState.hosts;
 
                         log.debug("Alive hosts: " + JSON.stringify(onlineHosts));
 
-                        onlineHosts.filter(host => !lastStateHosts.includes(host.ip) && host.description === '?').forEach(host => {
-                            log.info(host.ip + ' is up');
-                            notify(host.ip + ' ' + host.mac + ' 👻');
+                        onlineHosts.filter(host => !lastStateHosts.includes(host.ip) && host.description === "?").forEach(host => {
+                            log.info(host.ip + " is up");
+                            notify(host.ip + " " + host.mac + " 👻");
                         });
 
                         lastStateHosts.filter(hostIp => !onlineHosts.map(host => host.ip).includes(hostIp)).forEach(hostIp => {
-                            log.info(hostIp + ' is down');
-                            notify(hostIp + ' ☠');
+                            log.info(hostIp + " is down");
+                            notify(hostIp + " ☠");
                         });
 
-                        networkState.hosts = onlineHosts.filter(host => host.description === '?').map(host => host.ip);
+                        networkState.hosts = onlineHosts.filter(host => host.description === "?").map(host => host.ip);
 
                         this.saveNetworkState(db, networkState).then(res => db.close(), log.error);
                     },
@@ -45,11 +45,11 @@ NetworkApi.prototype.notifyAboutUnknownHosts = function (notify) {
 };
 
 NetworkApi.prototype.saveNetworkState = function (db, networkState) {
-    return new Promise((resolve, reject) => db.collection('network-state').updateOne({}, networkState, {upsert: true}, (err, res) => err ? reject(err) : resolve(res)));
+    return new Promise((resolve, reject) => db.collection("network-state").updateOne({}, networkState, {upsert: true}, (err, res) => err ? reject(err) : resolve(res)));
 };
 
 NetworkApi.prototype.loadNetworkState = function (db) {
-    return new Promise((resolve, reject) => db.collection('network-state').findOne({}, (err, res) => err ? reject(err) : resolve(res)));
+    return new Promise((resolve, reject) => db.collection("network-state").findOne({}, (err, res) => err ? reject(err) : resolve(res)));
 };
 
 NetworkApi.prototype.connect = function () {
@@ -57,7 +57,11 @@ NetworkApi.prototype.connect = function () {
 };
 
 NetworkApi.prototype.scanNetwork = function () {
-    return new Promise((resolve, reject) => request(this.hostSVCurl).then(body => resolve(JSON.parse(body))).catch(err => reject(err)));
+    return new Promise((resolve, reject) =>
+        request(this.hostSVCurl, (err, response, body) =>
+            !err ? resolve(JSON.parse(body)) : reject(err)
+        )
+    );
 };
 
 module.exports = NetworkApi;

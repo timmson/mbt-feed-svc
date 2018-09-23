@@ -22,7 +22,10 @@ InstaApi.prototype.notifyAboutMemes = function () {
 
             let messages = posts.map(post => {
                 let message = {
-                    to: this.config.channel,
+                    to: {
+                        id: this.config.channel,
+                        username: this.config.channel
+                    },
                     version: 2,
                     url: post.webLink,
                     text: this.config.tag,

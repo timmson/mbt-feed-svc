@@ -1,11 +1,12 @@
 const log = require('log4js').getLogger('message');
+const r = require("request");
 
 function MessageApi(telegramBot) {
     this.telegramBot = telegramBot
 }
 
-MessageApi.prototype.sendMessage = async function (message) {
-    const replyMarkup = message.isLike ? this.getLikeButton(getRandomInt(0, 15)) : (message.url ? JSON.stringify({
+MessageApi.prototype.sendMessage = async function (message, likeButton) {
+    const replyMarkup = message.isLike ? likeButton : (message.url ? JSON.stringify({
         inline_keyboard: [[{
             text: "🌍",
             url: message.url
@@ -45,13 +46,5 @@ MessageApi.prototype.sendMessage = async function (message) {
     }
 };
 
-
-MessageApi.prototype.getLikeButton = function(cnt) {
-    return JSON.stringify({inline_keyboard: [[{text: "👍" + cnt, callback_data: "" + (cnt + 1)}]]});
-};
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
 
 module.exports = MessageApi;

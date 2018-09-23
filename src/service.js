@@ -34,7 +34,7 @@ new CronJob({
 log.info("Topic Insta started at " + config.instagram.cronTime);
 new CronJob({
     cronTime: config.instagram.cronTime,
-    onTick: () => instaApi.notifyAboutMemes(messages => messages.forEach(messageApi.sendMessage).catch(err => log.error(err))),
+    onTick: () => instaApi.notifyAboutMemes().then(messages => messages.forEach(message => messageApi.sendMessage(message, getLikeButton(getRandomInt(0, 15)))).catch(err => log.error(err))),
     start: true
 });
 
@@ -72,3 +72,11 @@ process.on("SIGTERM", () => {
     log.info("Service has stopped");
     process.exit(0);
 });
+
+function getLikeButton(cnt) {
+    return JSON.stringify({inline_keyboard: [[{text: "👍" + cnt, callback_data: "" + (cnt + 1)}]]});
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}

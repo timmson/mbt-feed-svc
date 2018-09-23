@@ -1,5 +1,5 @@
 const config = require("./config.js");
-config.mongo = { url : process.env["db"]};
+config.mongo = {url: process.env["db"]};
 const log = require("log4js").getLogger("main");
 
 const MessageApi = require("./modules/message-api.js");
@@ -9,7 +9,7 @@ const WeatherApi = require("./modules/weather-api.js");
 const InstaApi = require("./modules/insta-api.js");
 
 const CronJob = require("cron").CronJob;
-const TelegramBotApi= require("node-telegram-bot-api");
+const TelegramBotApi = require("node-telegram-bot-api");
 const telegramBot = new TelegramBotApi(config.telegram.token, config.telegram.params);
 
 const messageApi = new MessageApi(telegramBot);
@@ -20,21 +20,40 @@ const newsApi = new NewsApi(config.mongo.url);
 log.info("Topic NetworkState started at " + config.cron.network);
 new CronJob({
     cronTime: config.cron.network,
-    onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
+    onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({
+        to: config.to,
+        type: "text",
+        version: "2",
+        text: text
+    }).catch(err => log.error(err))),
     start: true
 });
 
 log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({
     cronTime: config.cron.weather,
-    onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({to: config.to, type: "text", version: "2", text: text}).catch(err => log.error(err))),
+    onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({
+        to: config.to,
+        type: "text",
+        version: "2",
+        text: text
+    }).catch(err => log.error(err))),
     start: true
 });
 
 log.info("Topic Insta started at " + config.instagram.cronTime);
 new CronJob({
     cronTime: config.instagram.cronTime,
-    onTick: () => instaApi.notifyAboutMemes().then(messages => messages.forEach(message => messageApi.sendMessage(message, getLikeButton(getRandomInt(0, 15)))).catch(err => log.error(err))),
+    onTick: async () => {
+        try {
+            let messages = await instaApi.notifyAboutMemes();
+            for (let i = 0; i < messages.length; i++) {
+                await messageApi.sendMessage(messages[i], getLikeButton(getRandomInt(0, 15)));
+            }
+        } catch (e) {
+            log.error(e);
+        }
+    },
     start: true
 });
 
@@ -51,7 +70,7 @@ config.topics.forEach(topic => {
 
 telegramBot.on("callback_query", async message => {
     try {
-        await telegramBot.editMessageReplyMarkup(messageApi.getLikeButton(parseInt(message.data)), {
+        await telegramBot.editMessageReplyMarkup(getLikeButton(parseInt(message.data)), {
             message_id: message.message.message_id,
             chat_id: message.message.chat.id
         });

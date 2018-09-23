@@ -52,7 +52,7 @@ config.topics.forEach(topic => {
 
 telegramBot.on("callback_query", async message => {
     try {
-        await telegramBot.editMessageReplyMarkup(getLikeButton(parseInt(message.data)), {
+        await telegramBot.editMessageReplyMarkup(messageApi.getLikeButton(parseInt(message.data)), {
             message_id: message.message.message_id,
             chat_id: message.message.chat.id
         });

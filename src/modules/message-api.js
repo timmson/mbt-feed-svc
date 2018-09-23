@@ -5,7 +5,7 @@ function MessageApi(telegramBot) {
 }
 
 MessageApi.prototype.sendMessage = async function (message) {
-    const replyMarkup = message.isLike ? getLikeButton(getRandomInt(0, 15)) : (message.url ? JSON.stringify({
+    const replyMarkup = message.isLike ? this.getLikeButton(getRandomInt(0, 15)) : (message.url ? JSON.stringify({
         inline_keyboard: [[{
             text: "🌍",
             url: message.url
@@ -46,9 +46,9 @@ MessageApi.prototype.sendMessage = async function (message) {
 };
 
 
-function getLikeButton(cnt) {
+MessageApi.prototype.getLikeButton = function(cnt) {
     return JSON.stringify({inline_keyboard: [[{text: "👍" + cnt, callback_data: "" + (cnt + 1)}]]});
-}
+};
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;

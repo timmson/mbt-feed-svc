@@ -13,7 +13,7 @@ InstaApi.prototype.notifyAboutMemes = function () {
     return new Promise(async (resolve, reject) => {
         try {
             let session = await Client.Session.create(this.device, this.storage, this.config.user, this.config.password);
-            let hashTags = await new Client.Feed.TaggedMedia(session, this.tag, 2).get();
+            let hashTags = await new Client.Feed.TaggedMedia(session, this.config.tag, 2).get();
 
             let posts = hashTags.map(post => post.getParams())
                 .filter(post => this.mediaType ? post.mediaType === this.mediaType : true)

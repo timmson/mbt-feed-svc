@@ -20,7 +20,7 @@ NetworkApi.prototype.notifyAboutUnknownHosts = function (notify) {
 
                         onlineHosts.filter(host => !lastStateHosts.includes(host.ip) && host.description === "?").forEach(host => {
                             log.info(host.ip + " is up");
-                            notify(host.ip + " " + host.mac + " 👻");
+                            notify(host.ip + " " + host.mac + " " +  host.vendor + " 👻");
                         });
 
                         lastStateHosts.filter(hostIp => !onlineHosts.map(host => host.ip).includes(hostIp)).forEach(hostIp => {

@@ -1,4 +1,3 @@
-const {URL} = require("url");
 const log = require('log4js').getLogger('insta');
 const Client = require("instagram-private-api").V1;
 
@@ -33,9 +32,6 @@ InstaApi.prototype.notifyAboutMemes = function () {
                 };
                 message.type = "image_link";
                 message.image = post.images.sort((a, b) => a.width > b.width).pop().url;
-                let url = new URL(message.image);
-                url.search = "";
-                message.image = url.toString();
                 log.info("Message: " + JSON.stringify(message));
                 return message;
             });

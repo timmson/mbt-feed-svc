@@ -3,7 +3,6 @@ config.mongo = {url: process.env["db"]};
 const log = require("log4js").getLogger("main");
 
 const MessageApi = require("./modules/message-api.js");
-const NetApi = require("./modules/net-api.js");
 const NewsApi = require("./modules/news-api.js");
 const WeatherApi = require("./modules/weather-api.js");
 const InstaApi = require("./modules/insta-api.js");
@@ -13,21 +12,8 @@ const TelegramBotApi = require("node-telegram-bot-api");
 const telegramBot = new TelegramBotApi(config.telegram.token, config.telegram.params);
 
 const messageApi = new MessageApi(telegramBot);
-const netApi = new NetApi(config);
 const instaApi = new InstaApi(config.instagram);
 const newsApi = new NewsApi(config.mongo.url);
-
-log.info("Topic NetworkState started at " + config.cron.network);
-new CronJob({
-    cronTime: config.cron.network,
-    onTick: () => netApi.notifyAboutUnknownHosts(text => messageApi.sendMessage({
-        to: config.to,
-        type: "text",
-        version: "2",
-        text: text
-    }).catch(err => log.error(err))),
-    start: true
-});
 
 log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({

@@ -16,8 +16,8 @@ module.exports = {
 
     instagram: {
         channel: "@tmsnInstaMemes",
-        user: "timmson666",
-        password: "Y2riB^Ln2q#9",
+        user: "<your nick>",
+        password: "<your password>",
         tmpDir: "tmp",
         tag: "мемы",
         limit: 2,

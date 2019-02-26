@@ -28,7 +28,7 @@ module.exports.notifyAboutWeather = function (notify) {
                 "",
                 "<b>" + forecastRecord.day + ", " + forecastRecord.date + "</b>",
                 ["🌡 Температура от", forecastRecord.low, "до", forecastRecord.high + ",", forecastRecord.skytextday].join(" ")
-            ].join("<br/>")
+            ].join("\n")
         );
     });
 };

@@ -21,7 +21,7 @@ module.exports.notifyAboutWeather = function (notify) {
         let currentRecord = result[0]["current"];
         let forecastRecord = result[0]["forecast"].filter(row => row.date === getTomorrow())[0];
 
-        notify(["<b>Сегодня<b>",
+        notify(["<b>Сегодня</b>",
                 ["🌡 Температура", currentRecord.temperature, "(ощущается как", currentRecord.feelslike + "),", currentRecord.skytext].join(" "),
                 ["💧 Влажность", currentRecord.humidity + "%"].join(" "),
                 ["🌬 Ветер", currentRecord.winddisplay, ""].join(" "),

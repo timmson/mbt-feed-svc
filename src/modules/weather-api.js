@@ -1,21 +1,6 @@
 const log = require("log4js").getLogger("weather");
 const weather = require("weather-js");
 
-const weatherIcons = {
-    "sunny": "☀",
-    "mostly sunny": "🌤",
-    "partly sunny": "⛅",
-    "cloudy": "🌥",
-    "mostly cloudy": "☁",
-    "light rain": "🌦",
-    "rain": "🌧",
-    "rain showers": "⛈",
-    "t-storms": "🌪",
-    "light snow" : "🌨",
-    "snow" : "❄️"
-};
-
-
 
 function getTomorrow() {
     let d = new Date();
@@ -23,20 +8,27 @@ function getTomorrow() {
     return d.toISOString().split("T")[0];
 }
 
-function getToday() {
-    return new Date().toISOString().split("T")[0];
-}
-
-
 module.exports.notifyAboutWeather = function (notify, isTomorrow) {
     weather.find({
         search: "Moscow, Russia",
-        degreeType: "C"
+        degreeType: "C",
+        lang: "RU"
     }, (err, result) => {
         if (err) {
             log.error(err);
         }
-        let data = result[0]["forecast"].filter(row => row.date === (isTomorrow ? getTomorrow() : getToday()))[0];
-        notify((isTomorrow ? "Завтра" : "Сегодня") + " от " + data["low"] + " до " + data["high"] + "℃ " + (weatherIcons[data["skytextday"].toLowerCase()] || data["skytextday"]));
+
+        let currentRecord = result[0]["current"];
+        let forecastRecord = result[0]["forecast"].filter(row => row.date === getTomorrow())[0];
+
+        notify(["<b>Сегодня<b>",
+                ["🌡 Температура", currentRecord.temperature, "(ощущается как", currentRecord.feelslike + "),", currentRecord.skytext].join(" "),
+                ["💧 Влажность", currentRecord.humidity + "%"].join(" "),
+                ["🌬 Ветер", currentRecord.winddisplay, ""].join(" "),
+                "",
+                "<b>" + forecastRecord.day + ", " + forecastRecord.date + "</b>",
+                ["🌡 Температура от", forecastRecord.low, "до", forecastRecord.high + ",", forecastRecord.skytextday].join(" ")
+            ].join("\n")
+        );
     });
 };

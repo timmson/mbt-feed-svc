@@ -18,12 +18,15 @@ const newsApi = new NewsApi(config.mongo.url);
 log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({
     cronTime: config.cron.weather,
-    onTick: () => WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({
-        to: config.to,
-        type: "text",
-        version: "2",
-        text: text
-    }).catch(err => log.error(err))),
+    onTick: () =>
+        [config.to].forEach(toId =>
+            WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({
+                to: toId,
+                type: "text",
+                version: "2",
+                text: text
+            }).catch(err => log.error(err)), true)
+        ),
     start: true
 });
 

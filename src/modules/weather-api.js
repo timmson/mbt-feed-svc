@@ -8,7 +8,7 @@ function getTomorrow() {
     return d.toISOString().split("T")[0];
 }
 
-module.exports.notifyAboutWeather = function (notify, isTomorrow) {
+module.exports.notifyAboutWeather = function (notify) {
     weather.find({
         search: "Moscow, Russia",
         degreeType: "C",
@@ -28,7 +28,7 @@ module.exports.notifyAboutWeather = function (notify, isTomorrow) {
                 "",
                 "<b>" + forecastRecord.day + ", " + forecastRecord.date + "</b>",
                 ["🌡 Температура от", forecastRecord.low, "до", forecastRecord.high + ",", forecastRecord.skytextday].join(" ")
-            ].join("\n")
+            ].join("<br/>")
         );
     });
 };

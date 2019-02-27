@@ -20,4 +20,4 @@ USER ${username}
 
 ENV db ${db}
 
-CMD ["nodejs", "service.js"]
+CMD ["nodejs", "app.js"]

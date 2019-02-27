@@ -9,10 +9,4 @@ services:
         - username=user
         - config_server
         - config_path=/mbt-feed-svc/config.js
-        - db=mongodb://feed-db-srv:27017/bot-log
-    restart: always
-
-  mbt-feed-db:
-    image: timmson/mbt-platform-v2:mongo
-    container_name: feed-db-srv
     restart: always

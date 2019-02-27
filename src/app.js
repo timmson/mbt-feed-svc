@@ -13,20 +13,28 @@ const telegramBot = new TelegramBotApi(config.telegram.token, config.telegram.pa
 
 const messageApi = new MessageApi(telegramBot);
 const instaApi = new InstaApi(config.instagram);
-const newsApi = new NewsApi(config.mongo.url);
+
 
 log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({
     cronTime: config.cron.weather,
-    onTick: () =>
-        [config.to].forEach(toId =>
-            WeatherApi.notifyAboutWeather(text => messageApi.sendMessage({
-                to: toId,
-                type: "text",
-                version: "2",
-                text: text
-            }).catch(err => log.error(err)), true)
-        ),
+    onTick: async () => {
+        try {
+            let text = await WeatherApi(new Date());
+            for (let i = 0; i < config.to.length - 1; i++) {
+                await messageApi.sendMessage(
+                    {
+                        to: config.to[i],
+                        type: "link",
+                        version: "2",
+                        text
+                    }
+                );
+            }
+        } catch (err) {
+            log.error(err)
+        }
+    },
     start: true
 });
 
@@ -51,7 +59,23 @@ config.topics.forEach(topic => {
     new CronJob(
         {
             cronTime: topic.cronTime,
-            onTick: () => newsApi.notifyAboutNews(topic, message => messageApi.sendMessage(message).catch(err => log.error(err))),
+            onTick: async () => {
+                try {
+                    let message = await NewsApi(topic.url, new Date());
+                    await messageApi.sendMessage({
+                        to: {
+                            id: topic.channel,
+                            username: topic.channel
+                        },
+                        version: "2",
+                        type: "link",
+                        text: message.title,
+                        url: message.link
+                    });
+                } catch (err) {
+                    log.error(err)
+                }
+            },
             start: true
         }
     );

@@ -22,7 +22,7 @@
     "node"
   ],
   "author": "timmson",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "devDependencies": {
     "axios": "0.18.0",
     "chai": "4.2.0",

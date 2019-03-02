@@ -1,5 +1,4 @@
 const config = require("./config.js");
-config.mongo = {url: process.env["db"]};
 const log = require("log4js").getLogger("main");
 
 const MessageApi = require("./modules/message-api.js");
@@ -21,18 +20,18 @@ new CronJob({
     onTick: async () => {
         try {
             let text = await WeatherApi(new Date());
-            for (let i = 0; i < config.to.length - 1; i++) {
+            config.to.forEach(async to =>
                 await messageApi.sendMessage(
                     {
-                        to: config.to[i],
+                        to: to,
                         type: "link",
                         version: "2",
                         text
                     }
-                );
-            }
+                )
+            )
         } catch (err) {
-            log.error(err)
+            log.error(err);
         }
     },
     start: true
@@ -47,8 +46,8 @@ new CronJob({
             for (let i = 0; i < messages.length; i++) {
                 await messageApi.sendMessage(messages[i], getLikeButton(getRandomInt(0, 15)));
             }
-        } catch (e) {
-            log.error(e);
+        } catch (err) {
+            log.error(err);
         }
     },
     start: true
@@ -61,19 +60,21 @@ config.topics.forEach(topic => {
             cronTime: topic.cronTime,
             onTick: async () => {
                 try {
-                    let message = await NewsApi(topic.url, new Date());
-                    await messageApi.sendMessage({
-                        to: {
-                            id: topic.channel,
-                            username: topic.channel
-                        },
-                        version: "2",
-                        type: "link",
-                        text: message.title,
-                        url: message.link
-                    });
+                    let messages = await NewsApi(topic.url, new Date());
+                    messages.forEach(async message =>
+                        await messageApi.sendMessage({
+                            to: {
+                                id: topic.channel,
+                                username: topic.channel
+                            },
+                            version: "2",
+                            type: "link",
+                            text: message.title,
+                            url: message.link
+                        })
+                    )
                 } catch (err) {
-                    log.error(err)
+                    log.error(err);
                 }
             },
             start: true

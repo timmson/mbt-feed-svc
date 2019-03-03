@@ -10,7 +10,7 @@ const dayTypes = {
 };
 
 function formatDate(date) {
-    let dayType = prodCalendar.getDay(date.getYear(), date.getMonth + 1, date.getDate());
+    let dayType = prodCalendar.getDay(date.getFullYear(),date.getMonth() + 1, date.getDate());
     return [date.getDate(), months[date.getMonth()] + ",", dayTypes[dayType]].join(" ");
 }
 

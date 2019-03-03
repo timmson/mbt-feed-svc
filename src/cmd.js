@@ -5,7 +5,7 @@ const config = require("./config.js");
 
 //const messageApi = new MessageApi(telegramBot);
 
-const NewsApi = require("./modules/news-api.js");
+const newsApi = require("./modules/news-api.js");
 
 function MessageApi() {
 
@@ -25,7 +25,7 @@ let messageApi = new MessageApi();
 
 config.topics.forEach(async topic => {
     try {
-        let messages = await NewsApi(topic.url, new Date());
+        let messages = await newsApi(topic.url, new Date());
         console.log(messages);
         messages.forEach(async message =>
             await messageApi.sendMessage({

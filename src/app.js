@@ -2,8 +2,8 @@ const config = require("./config.js");
 const log = require("log4js").getLogger("main");
 
 const MessageApi = require("./modules/message-api.js");
-const NewsApi = require("./modules/news-api.js");
-const WeatherApi = require("./modules/weather-api.js");
+const newsApi = require("./modules/news-api.js");
+const weatherApi = require("./modules/weather-api.js");
 const InstaApi = require("./modules/insta-api.js");
 
 const CronJob = require("cron").CronJob;
@@ -19,7 +19,7 @@ new CronJob({
     cronTime: config.cron.weather,
     onTick: async () => {
         try {
-            let text = await WeatherApi(new Date());
+            let text = await weatherApi(new Date());
             config.to.forEach(async to =>
                 await messageApi.sendMessage(
                     {
@@ -60,7 +60,7 @@ config.topics.forEach(topic => {
             cronTime: topic.cronTime,
             onTick: async () => {
                 try {
-                    let messages = await NewsApi(topic.url, new Date());
+                    let messages = await newsApi(topic.url, new Date());
                     messages.forEach(async message =>
                         await messageApi.sendMessage({
                             to: {

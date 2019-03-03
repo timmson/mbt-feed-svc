@@ -9,6 +9,7 @@
     "instagram-private-api": "0.6.8",
     "log4js": "^1.1.1",
     "node-telegram-bot-api": "0.30.0",
+    "prod-cal": "1.0.3",
     "request": "2.88.0",
     "weather-js": "2.0.0",
     "xml2js": "0.4.17"

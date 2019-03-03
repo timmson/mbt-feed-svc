@@ -93,6 +93,12 @@ telegramBot.on("callback_query", async message => {
     }
 });
 
+messageApi.sendMessage({
+    to: config.to[0],
+    text: "Started at " + new Date(),
+    type: "text"
+}).catch(log.error);
+
 log.info("Service has started");
 log.info("Please press [CTRL + C] to stop");
 

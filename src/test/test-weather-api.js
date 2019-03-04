@@ -6,7 +6,7 @@ describe("WeatherApi", () => {
 
         it("Should return  not null message", async () => {
             let message = await WeatherApi(new Date());
-            console.log(message);
+            //console.log(message);
             expect(message).to.not.be.null;
         });
 

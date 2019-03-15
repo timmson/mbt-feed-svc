@@ -46,7 +46,7 @@ function weatherApi(date) {
                         ["🌬 Ветер", currentRecord.winddisplay, ""].join(" "),
                         "",
                         "<b>Завтра, " + formatDate(new Date(forecastRecord.date)) + "</b>",
-                        ["🌡 от", forecastRecord.low + "℃", "до", forecastRecord.high + "℃,",].join(" "),
+                        ["🌡 от", forecastRecord.low + "℃", "до", forecastRecord.high + "℃"].join(" "),
                         ["⛅", forecastRecord.skytextday].join(" ")
                     ].join("\n")
                 );

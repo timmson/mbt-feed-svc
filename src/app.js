@@ -94,7 +94,7 @@ bot.on("callback_query", async (ctx) => {
                 await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
                 await ctx.answerCbQuery("Posted");
             } else {
-                await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data))).catch(log.error);
+                await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data))).catch((err) => log.error(err));
             }
         } catch (err) {
             log.error(err);
@@ -133,7 +133,7 @@ bot.on("photo", async (ctx) => {
 });
 
 bot.startPolling();
-bot.telegram.sendMessage(config.to[0].id, "Started at " + new Date()).catch(log.error);
+bot.telegram.sendMessage(config.to[0].id, "Started at " + new Date()).catch((err) => log.error(err));
 
 log.info("Service has started");
 log.info("Please press [CTRL + C] to stop");

@@ -87,9 +87,18 @@ config.topics.forEach(topic => {
     );
 });
 
-bot.on("callback_query", (ctx) => {
-        log.info(ctx);
-        ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.message.data))).catch(log.error);
+bot.on("callback_query", async (ctx) => {
+        log.info(ctx.message);
+        try {
+            if (ctx.callbackQuery.data === "approved") {
+                let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
+                await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
+            } else {
+                await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data))).catch(log.error);
+            }
+        } catch (err) {
+            log.error(err);
+        }
     }
 );
 

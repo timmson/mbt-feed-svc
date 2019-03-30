@@ -46,7 +46,7 @@ new CronJob({
             let messages = await instaApi.notifyAboutMemes();
             for (let i = 0; i < messages.length; i++) {
                 log.info("channel: " + message.to.id + " <- " + message.url);
-                await bot.telegram.sendMessage(message[i].to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
+                await bot.telegram.sendPhoto(message[i].to.id, {source: message[i].url}, getLikeButton(getRandomInt(0, 15)));
             }
         } catch (err) {
             log.error(err);
@@ -84,21 +84,38 @@ config.topics.forEach(topic => {
     );
 });
 
-bot.on("callback_query", ctx =>
+bot.on("callback_query", (ctx) =>
     ctx.editMessageReplyMarkup(getLikeButton(parseInt(message.data))).catch(log.error)
 );
 
-bot.on("photo", ctx => {
-    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- " + ctx.message.caption);
-    if (config.to[0].id === ctx.message.from.id) {
-        log.info(JSON.stringify(ctx.message.photo));
-    } else {
-        /**TODO
-         *
-         */
+bot.command("start", async (ctx) => {
+    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /start");
+    try {
+        await ctx.reply("Ok! Now send funny picture to me");
+    } catch (err) {
+        log.error(err);
     }
-    log.info("channel: " + config.instagram.channel + " <- " + "...");
-    //await bot.telegram.sendMessage(ctx.to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
+});
+
+bot.on("photo", async (ctx) => {
+    let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size) ? 1 : ((b.file_size > a.file_size) ? -1 : 0))[0].file_id;
+    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- " + ctx.telegram.getFileLink(fileId));
+    try {
+        if (config.to[0].id === ctx.message.from.id) {
+            log.info(JSON.stringify(ctx.message.photo));
+            await bot.telegram.sendPhoto(/*config.instagram.channel*/config.to[0].id, fileId, getLikeButton(getRandomInt(0, 15)));
+        } else {
+            /**TODO
+             *
+             */
+            await bot.telegram.sendPhoto(/*config.instagram.channel*/config.to[0].id, ctx.message.photo[0]["file_id"]);
+            await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
+        }
+        log.info("channel: " + config.instagram.channel + " <- " + "...");
+        //await bot.telegram.sendMessage(ctx.to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
+    } catch (err) {
+        log.error(err);
+    }
 });
 
 bot.startPolling();

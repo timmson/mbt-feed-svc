@@ -46,7 +46,7 @@ new CronJob({
             let messages = await instaApi.notifyAboutMemes();
             for (let i = 0; i < messages.length; i++) {
                 log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + messages[i].image);
-                await bot.telegram.sendPhoto(config.to[0].id, {source: messages[i].image}, Markup.inlineKeyboard([
+                await bot.telegram.sendPhoto(config.to[0].id, messages[i].image, Markup.inlineKeyboard([
                     Markup.callbackButton("✅ Approved", "approved"),
                     Markup.urlButton("🌍️ Open", messages[i].post)
                 ]).extra());
@@ -104,10 +104,11 @@ bot.command("start", async (ctx) => {
 
 bot.on("photo", async (ctx) => {
     let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
-    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- " + ctx.telegram.getFileLink(fileId));
+    ctx.telegram.getFileLink(fileId).then(link =>
+        log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- " + link)
+    );
     try {
         if (config.to[0].id === ctx.message.from.id) {
-            log.info(JSON.stringify(ctx.message.photo));
             await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
         } else {
             /**TODO
@@ -116,7 +117,6 @@ bot.on("photo", async (ctx) => {
             await bot.telegram.sendPhoto(/*config.instagram.channel*/config.to[0].id, ctx.message.photo[0]["file_id"]);
             await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
         }
-        log.info("channel: " + config.instagram.channel + " <- " + "...");
         //await bot.telegram.sendMessage(ctx.to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
     } catch (err) {
         log.error(err);

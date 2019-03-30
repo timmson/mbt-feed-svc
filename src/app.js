@@ -89,8 +89,15 @@ bot.on("callback_query", ctx =>
 );
 
 bot.on("photo", ctx => {
+    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- " + ctx.message.caption);
+    if (config.to.indexOf(ctx.from.id) >= 0) {
+        log.info(JSON.stringify(ctx.message.photo));
+    } else {
+        /**TODO
+         *
+         */
+    }
     log.info("channel: " + config.instagram.channel + " <- " + "...");
-    log.info(ctx);
     //await bot.telegram.sendMessage(ctx.to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
 });
 

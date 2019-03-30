@@ -1,16 +1,17 @@
 const config = require("./config.js");
 const log = require("log4js").getLogger("main");
 
-const MessageApi = require("./modules/message-api.js");
+
+const Telegraf = require("telegraf");
+const Markup = require("telegraf/markup");
+
 const newsApi = require("./modules/news-api.js");
 const weatherApi = require("./modules/weather-api.js");
 const InstaApi = require("./modules/insta-api.js");
 
 const CronJob = require("cron").CronJob;
-const TelegramBotApi = require("node-telegram-bot-api");
-const telegramBot = new TelegramBotApi(config.telegram.token, config.telegram.params);
 
-const messageApi = new MessageApi(telegramBot);
+const bot = new Telegraf(config.telegram.token);
 const instaApi = new InstaApi(config.instagram);
 
 
@@ -20,16 +21,15 @@ new CronJob({
     onTick: async () => {
         try {
             let text = await weatherApi(new Date());
-            config.to.forEach(async to =>
-                await messageApi.sendMessage(
-                    {
-                        to: to,
-                        type: "link",
-                        version: "2",
-                        text
+            config.to.forEach(async to => {
+                    try {
+                        log.info(to.username + "[" + to.id + "]" + " <- " + text);
+                        await bot.telegram.sendMessage(to.id, text);
+                    } catch (e) {
+                        log.error(e);
                     }
-                )
-            )
+                }
+            );
         } catch (err) {
             log.error(err);
         }
@@ -44,7 +44,8 @@ new CronJob({
         try {
             let messages = await instaApi.notifyAboutMemes();
             for (let i = 0; i < messages.length; i++) {
-                await messageApi.sendMessage(messages[i], getLikeButton(getRandomInt(0, 15)));
+                log.info("channel: " + message.to.id + " <- " + message.url);
+                await bot.telegram.sendMessage(message[i].to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
             }
         } catch (err) {
             log.error(err);
@@ -61,17 +62,17 @@ config.topics.forEach(topic => {
             onTick: async () => {
                 try {
                     let messages = await newsApi(topic.url, new Date());
-                    messages.forEach(async message =>
-                        await messageApi.sendMessage({
-                            to: {
-                                id: topic.channel,
-                                username: topic.channel
-                            },
-                            version: "2",
-                            type: "link",
-                            text: message.title,
-                            url: message.link
-                        })
+                    messages.forEach(async message => {
+                            try {
+                                log.info("channel: " + topic.channel + " <- " + message.title);
+                                await bot.telegram.sendMessage(topic.channel, text, Markup.inlineKeyboard([
+                                    Markup.urlButton("🌍️ Open", message.link),
+                                ]).extra());
+
+                            } catch (err) {
+                                log.error(err);
+                            }
+                        }
                     )
                 } catch (err) {
                     log.error(err);
@@ -82,22 +83,18 @@ config.topics.forEach(topic => {
     );
 });
 
-telegramBot.on("callback_query", async message => {
-    try {
-        await telegramBot.editMessageReplyMarkup(getLikeButton(parseInt(message.data)), {
-            message_id: message.message.message_id,
-            chat_id: message.message.chat.id
-        });
-    } catch (err) {
-        log.error(err);
-    }
+bot.on("callback_query", ctx =>
+    ctx.editMessageReplyMarkup(getLikeButton(parseInt(message.data))).catch(log.error)
+);
+
+bot.on("photo", ctx => {
+    log.info("channel: " + config.instagram.channel + " <- " + "...");
+    log.info(ctx);
+    //await bot.telegram.sendMessage(ctx.to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
 });
 
-messageApi.sendMessage({
-    to: config.to[0],
-    text: "Started at " + new Date(),
-    type: "text"
-}).catch(log.error);
+bot.startPolling();
+bot.telegram.sendMessage(config.to[0].id, "Started at " + new Date()).catch(log.error);
 
 log.info("Service has started");
 log.info("Please press [CTRL + C] to stop");
@@ -113,7 +110,11 @@ process.on("SIGTERM", () => {
 });
 
 function getLikeButton(cnt) {
-    return JSON.stringify({inline_keyboard: [[{text: "👍" + cnt, callback_data: "" + (cnt + 1)}]]});
+    return Markup.inlineKeyboard(
+        [
+            Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
+        ]
+    ).extra();
 }
 
 function getRandomInt(min, max) {

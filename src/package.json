@@ -5,12 +5,13 @@
   "main": "app.js",
   "private": true,
   "dependencies": {
-    "cron": "^1.3.0",
+    "cron": "1.7.0",
     "instagram-private-api": "0.6.8",
-    "log4js": "^1.1.1",
+    "log4js": "4.1.0",
     "node-telegram-bot-api": "0.30.0",
     "prod-cal": "1.0.3",
     "request": "2.88.0",
+    "telegraf": "3.28.0",
     "weather-js": "2.0.0",
     "xml2js": "0.4.17"
   },

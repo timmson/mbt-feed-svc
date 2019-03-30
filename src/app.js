@@ -38,7 +38,7 @@ new CronJob({
     start: true
 });
 
-log.info("Topic Insta started at " + config.instagram.cronTime);
+/*log.info("Topic Insta started at " + config.instagram.cronTime);
 new CronJob({
     cronTime: config.instagram.cronTime,
     onTick: async () => {
@@ -56,7 +56,7 @@ new CronJob({
         }
     },
     start: true
-});
+});*/
 
 config.topics.forEach(topic => {
     log.info("Topic " + topic.name + " started at " + topic.cronTime);
@@ -91,15 +91,10 @@ bot.on("callback_query", async (ctx) => {
         try {
             if (ctx.callbackQuery.data === "approved") {
                 let fileId = ctx.callbackQuery.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
-                await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
+                await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)).extra());
                 await ctx.answerCbQuery("Posted");
             } else {
-                let cnt = parseInt(ctx.callbackQuery.data);
-                await ctx.editMessageReplyMarkup(Markup.inlineKeyboard(
-                    [
-                        Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
-                    ]
-                ));
+                await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data)));
             }
         } catch (err) {
             log.error(err);
@@ -116,6 +111,26 @@ bot.command("start", async (ctx) => {
     }
 });
 
+bot.command("meme", async(ctx) => {
+    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /start");
+    try {
+        if (config.to[0].id === ctx.message.from.id) {
+            let messages = await instaApi.notifyAboutMemes();
+            for (let i = 0; i < messages.length; i++) {
+                log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + messages[i].image);
+                await bot.telegram.sendPhoto(config.to[0].id, messages[i].image, Markup.inlineKeyboard([
+                    Markup.callbackButton("✅ Approved", "approved"),
+                    Markup.urlButton("🌍️ Open", messages[i].post)
+                ]).extra());
+            }
+        } else {
+            ctx.reply("Sorry:(")
+        }
+    } catch (err) {
+
+    }
+});
+
 bot.on("photo", async (ctx) => {
     let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
     ctx.telegram.getFileLink(fileId).then(link =>
@@ -123,7 +138,7 @@ bot.on("photo", async (ctx) => {
     );
     try {
         if (config.to[0].id === ctx.message.from.id) {
-            await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
+            await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)).extra());
         } else {
             /**TODO
              *
@@ -157,7 +172,7 @@ function getLikeButton(cnt) {
         [
             Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
         ]
-    ).extra();
+    );
 }
 
 function getRandomInt(min, max) {

@@ -88,7 +88,6 @@ config.topics.forEach(topic => {
 });
 
 bot.on("callback_query", async (ctx) => {
-        log.info(JSON.stringify(ctx.callbackQuery));
         try {
             if (ctx.callbackQuery.data === "approved") {
                 let fileId = ctx.callbackQuery.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;

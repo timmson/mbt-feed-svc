@@ -45,7 +45,7 @@ new CronJob({
         try {
             let messages = await instaApi.notifyAboutMemes();
             for (let i = 0; i < messages.length; i++) {
-                log.info("channel: " + config.to[0].id + " <- " + messages[i].url);
+                log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + messages[i].image);
                 await bot.telegram.sendPhoto(config.to[0].id, {source: messages[i].image}, Markup.inlineKeyboard([
                     Markup.callbackButton("✅ Approved", "approved"),
                     Markup.urlButton("🌍️ Open", messages[i].post)
@@ -87,8 +87,10 @@ config.topics.forEach(topic => {
     );
 });
 
-bot.on("callback_query", (ctx) =>
-    ctx.editMessageReplyMarkup(getLikeButton(parseInt(message.data))).catch(log.error)
+bot.on("callback_query", (ctx) => {
+        log.info(ctx);
+        ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.message.data))).catch(log.error);
+    }
 );
 
 bot.command("start", async (ctx) => {

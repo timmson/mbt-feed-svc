@@ -1,6 +1,8 @@
 const log = require('log4js').getLogger('insta');
 const Client = require("instagram-private-api").V1;
 
+log.level = "info";
+
 function InstaApi(config) {
     this.config = config;
     this.device = new Client.Device("someuser");

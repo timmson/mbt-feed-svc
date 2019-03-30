@@ -1,6 +1,7 @@
 const config = require("./config.js");
 const log = require("log4js").getLogger("main");
 
+log.level = "info";
 
 const Telegraf = require("telegraf");
 const Markup = require("telegraf/markup");

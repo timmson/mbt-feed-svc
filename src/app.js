@@ -126,7 +126,6 @@ bot.on("photo", async (ctx) => {
             await bot.telegram.sendPhoto(/*config.instagram.channel*/config.to[0].id, ctx.message.photo[0]["file_id"]);
             await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
         }
-        //await bot.telegram.sendMessage(ctx.to.id, message[i].text, getLikeButton(getRandomInt(0, 15)));
     } catch (err) {
         log.error(err);
     }

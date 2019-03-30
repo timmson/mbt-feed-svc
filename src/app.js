@@ -111,17 +111,16 @@ bot.command("start", async (ctx) => {
     }
 });
 
-bot.command("meme", async(ctx) => {
+bot.command("meme", async (ctx) => {
     log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /start");
     try {
         if (config.to[0].id === ctx.message.from.id) {
             let messages = await instaApi.notifyAboutMemes();
             for (let i = 0; i < messages.length; i++) {
                 log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + messages[i].image);
-                await bot.telegram.sendPhoto(config.to[0].id, messages[i].image, Markup.inlineKeyboard([
-                    Markup.callbackButton("✅ Approved", "approved"),
-                    Markup.urlButton("🌍️ Open", messages[i].post)
-                ]).extra());
+                await bot.telegram.sendPhoto(config.to[0].id, messages[i].image, getReviewButton(messages[i].post).extra()
+                )
+                ;
             }
         } else {
             ctx.reply("Sorry:(")
@@ -143,7 +142,7 @@ bot.on("photo", async (ctx) => {
             /**TODO
              *
              */
-            await bot.telegram.sendPhoto(/*config.instagram.channel*/config.to[0].id, ctx.message.photo[0]["file_id"]);
+            await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton("https://t.me/" + ctx.message.from.username).extra);
             await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
         }
     } catch (err) {
@@ -166,6 +165,13 @@ process.on("SIGTERM", () => {
     log.info("Service has stopped");
     process.exit(0);
 });
+
+function getReviewButton(url) {
+    return Markup.inlineKeyboard([
+        Markup.callbackButton("✅ Approved", "approved"),
+        Markup.urlButton("🌍️ Open", url)
+    ]);
+}
 
 function getLikeButton(cnt) {
     return Markup.inlineKeyboard(

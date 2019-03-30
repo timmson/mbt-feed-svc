@@ -94,7 +94,12 @@ bot.on("callback_query", async (ctx) => {
                 await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
                 await ctx.answerCbQuery("Posted");
             } else {
-                await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data))).catch((err) => log.error(err));
+                let cnt = parseInt(ctx.callbackQuery.data);
+                await ctx.editMessageReplyMarkup(Markup.inlineKeyboard(
+                    [
+                        Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
+                    ]
+                ));
             }
         } catch (err) {
             log.error(err);

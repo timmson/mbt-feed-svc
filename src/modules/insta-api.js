@@ -21,17 +21,9 @@ InstaApi.prototype.notifyAboutMemes = function () {
 
             let messages = posts.map(post => {
                 let message = {
-                    to: {
-                        id: this.config.channel,
-                        username: this.config.channel
-                    },
-                    version: 2,
-                    url: post.webLink,
-                    text: this.config.tag,
-                    isLike: true
+                    post: post.webLink,
+                    image: post.images.sort((a, b) => a.width > b.width).pop().url
                 };
-                message.type = "image_link";
-                message.image = post.images.sort((a, b) => a.width > b.width).pop().url;
                 log.info("Message: " + JSON.stringify(message));
                 return message;
             });

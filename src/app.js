@@ -45,8 +45,11 @@ new CronJob({
         try {
             let messages = await instaApi.notifyAboutMemes();
             for (let i = 0; i < messages.length; i++) {
-                log.info("channel: " + message.to.id + " <- " + message.url);
-                await bot.telegram.sendPhoto(message[i].to.id, {source: message[i].url}, getLikeButton(getRandomInt(0, 15)));
+                log.info("channel: " + config.to[0].id + " <- " + messages[i].url);
+                await bot.telegram.sendPhoto(config.to[0].id, {source: messages[i].image}, Markup.inlineKeyboard([
+                    Markup.callbackButton("✅ Approved", "approved"),
+                    Markup.urlButton("🌍️ Open", messages[i].post)
+                ]).extra());
             }
         } catch (err) {
             log.error(err);
@@ -98,12 +101,12 @@ bot.command("start", async (ctx) => {
 });
 
 bot.on("photo", async (ctx) => {
-    let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size) ? 1 : ((b.file_size > a.file_size) ? -1 : 0))[0].file_id;
+    let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
     log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- " + ctx.telegram.getFileLink(fileId));
     try {
         if (config.to[0].id === ctx.message.from.id) {
             log.info(JSON.stringify(ctx.message.photo));
-            await bot.telegram.sendPhoto(/*config.instagram.channel*/config.to[0].id, fileId, getLikeButton(getRandomInt(0, 15)));
+            await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
         } else {
             /**TODO
              *

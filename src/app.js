@@ -88,11 +88,12 @@ config.topics.forEach(topic => {
 });
 
 bot.on("callback_query", async (ctx) => {
-        log.info(ctx.message);
+        log.info(JSON.stringify(ctx));
         try {
             if (ctx.callbackQuery.data === "approved") {
-                let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
-                await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
+                //let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
+                //await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)));
+                await ctx.answerCbQuery("Posted");
             } else {
                 await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data))).catch(log.error);
             }

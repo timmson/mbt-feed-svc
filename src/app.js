@@ -38,7 +38,7 @@ new CronJob({
     start: true
 });
 
-/*log.info("Topic Insta started at " + config.instagram.cronTime);
+log.info("Topic Insta started at " + config.instagram.cronTime);
 new CronJob({
     cronTime: config.instagram.cronTime,
     onTick: async () => {
@@ -56,7 +56,7 @@ new CronJob({
         }
     },
     start: true
-});*/
+});
 
 config.topics.forEach(topic => {
     log.info("Topic " + topic.name + " started at " + topic.cronTime);

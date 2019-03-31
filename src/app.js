@@ -25,7 +25,7 @@ new CronJob({
             config.to.forEach(async to => {
                     try {
                         log.info(to.username + "[" + to.id + "]" + " <- " + text);
-                        await bot.telegram.sendMessage(to.id, text);
+                        await bot.telegram.sendMessage(to.id, text, {parse_mode: "HTML"});
                     } catch (e) {
                         log.error(e);
                     }
@@ -71,7 +71,7 @@ config.topics.forEach(topic => {
                                 log.info("channel: " + topic.channel + " <- " + message.title);
                                 await bot.telegram.sendMessage(topic.channel, text, Markup.inlineKeyboard([
                                     Markup.urlButton("🌍️ Open", message.link),
-                                ]).extra());
+                                ]).extra({parse_mode: "HTML"}));
 
                             } catch (err) {
                                 log.error(err);

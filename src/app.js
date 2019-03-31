@@ -69,7 +69,7 @@ config.topics.forEach(topic => {
                     messages.forEach(async message => {
                             try {
                                 log.info("channel: " + topic.channel + " <- " + message.title);
-                                await bot.telegram.sendMessage(topic.channel, text, Markup.inlineKeyboard([
+                                await bot.telegram.sendMessage(topic.channel, message.title, Markup.inlineKeyboard([
                                     Markup.urlButton("🌍️ Open", message.link),
                                 ]).extra({parse_mode: "HTML"}));
 

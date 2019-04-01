@@ -57,7 +57,7 @@ new CronJob({
             let text = await weatherApi(new Date());
             config.to.forEach(async (to) => {
                     try {
-                        log.info(to.username + "[" + to.id + "]" + " <- " + text);
+                        log.info(to.username + " [" + to.id + "]" + " <- " + text);
                         await bot.telegram.sendMessage(to.id, text, {parse_mode: "HTML"});
                     } catch (e) {
                         log.error(e);
@@ -138,7 +138,7 @@ bot.command("start", async (ctx) => {
 });
 
 bot.command("meme", async (ctx) => {
-    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /meme");
+    log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /meme");
     try {
         if (config.to[0].id === ctx.message.from.id) {
             await sendMemes();

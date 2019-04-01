@@ -21,18 +21,18 @@ async function sendMemes() {
     messages.forEach(async (message) => {
         try {
             log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + message.image);
-            await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton(message.post).extra());
+            await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton("🌍️ Open", message.post).extra());
         } catch (err) {
             log.error(err);
         }
     });
 }
 
-function getReviewButton(url) {
+function getReviewButton(name, url) {
     return Markup.inlineKeyboard(
         [
             Markup.callbackButton("✅ Approved", "approved"),
-            Markup.urlButton("🌍️ Open", url)
+            Markup.urlButton(name, url)
         ]
     );
 }
@@ -129,7 +129,7 @@ bot.on("callback_query", async (ctx) => {
 );
 
 bot.command("start", async (ctx) => {
-    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /start");
+    log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /start");
     try {
         await ctx.reply("Ok! Now send funny picture to me");
     } catch (err) {
@@ -162,7 +162,7 @@ bot.on("photo", async (ctx) => {
             /**TODO
              *
              */
-            await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton("https://t.me/" + ctx.message.from.username).extra());
+            await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton(ctx.message.from.username || ctx.message.from.id  , "https://t.me/" + ctx.message.from.username).extra());
             await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
         }
     } catch (err) {

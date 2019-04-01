@@ -162,7 +162,7 @@ bot.on("photo", async (ctx) => {
             /**TODO
              *
              */
-            await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton("https://t.me/" + ctx.message.from.username).extra);
+            await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton("https://t.me/" + ctx.message.from.username).extra());
             await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
         }
     } catch (err) {

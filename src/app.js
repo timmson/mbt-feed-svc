@@ -43,14 +43,7 @@ new CronJob({
     cronTime: config.instagram.cronTime,
     onTick: async () => {
         try {
-            let messages = await instaApi.notifyAboutMemes();
-            for (let i = 0; i < messages.length; i++) {
-                log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + messages[i].image);
-                await bot.telegram.sendPhoto(config.to[0].id, messages[i].image, Markup.inlineKeyboard([
-                    Markup.callbackButton("✅ Approved", "approved"),
-                    Markup.urlButton("🌍️ Open", messages[i].post)
-                ]).extra());
-            }
+            await sendMemes();
         } catch (err) {
             log.error(err);
         }
@@ -112,18 +105,12 @@ bot.command("start", async (ctx) => {
 });
 
 bot.command("meme", async (ctx) => {
-    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /start");
+    log.info(ctx.message.from.username + "[" + ctx.message.from.id + "]" + " <- /meme");
     try {
         if (config.to[0].id === ctx.message.from.id) {
-            let messages = await instaApi.notifyAboutMemes();
-            for (let i = 0; i < messages.length; i++) {
-                log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + messages[i].image);
-                await bot.telegram.sendPhoto(config.to[0].id, messages[i].image, getReviewButton(messages[i].post).extra()
-                )
-                ;
-            }
+            await sendMemes();
         } else {
-            ctx.reply("Sorry:(")
+            await ctx.reply("Sorry:(")
         }
     } catch (err) {
 
@@ -166,11 +153,25 @@ process.on("SIGTERM", () => {
     process.exit(0);
 });
 
+async function sendMemes() {
+    let messages = await instaApi.notifyAboutMemes();
+    messages.forEach(async (message) => {
+        try {
+            log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + message.image);
+            await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton(message.post).extra());
+        } catch (err) {
+            log.error(err);
+        }
+    });
+}
+
 function getReviewButton(url) {
-    return Markup.inlineKeyboard([
-        Markup.callbackButton("✅ Approved", "approved"),
-        Markup.urlButton("🌍️ Open", url)
-    ]);
+    return Markup.inlineKeyboard(
+        [
+            Markup.callbackButton("✅ Approved", "approved"),
+            Markup.urlButton("🌍️ Open", url)
+        ]
+    );
 }
 
 function getLikeButton(cnt) {

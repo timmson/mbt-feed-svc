@@ -16,6 +16,39 @@ const bot = new Telegraf(config.telegram.token);
 const instaApi = new InstaApi(config.instagram);
 
 
+async function sendMemes() {
+    let messages = await instaApi.notifyAboutMemes();
+    messages.forEach(async (message) => {
+        try {
+            log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + message.image);
+            await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton(message.post).extra());
+        } catch (err) {
+            log.error(err);
+        }
+    });
+}
+
+function getReviewButton(url) {
+    return Markup.inlineKeyboard(
+        [
+            Markup.callbackButton("✅ Approved", "approved"),
+            Markup.urlButton("🌍️ Open", url)
+        ]
+    );
+}
+
+function getLikeButton(cnt) {
+    return Markup.inlineKeyboard(
+        [
+            Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
+        ]
+    );
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
 log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({
     cronTime: config.cron.weather,
@@ -110,7 +143,7 @@ bot.command("meme", async (ctx) => {
         if (config.to[0].id === ctx.message.from.id) {
             await sendMemes();
         } else {
-            await ctx.reply("Sorry:(")
+            await ctx.reply("Sorry:(");
         }
     } catch (err) {
 
@@ -152,36 +185,3 @@ process.on("SIGTERM", () => {
     log.info("Service has stopped");
     process.exit(0);
 });
-
-async function sendMemes() {
-    let messages = await instaApi.notifyAboutMemes();
-    messages.forEach(async (message) => {
-        try {
-            log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + message.image);
-            await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton(message.post).extra());
-        } catch (err) {
-            log.error(err);
-        }
-    });
-}
-
-function getReviewButton(url) {
-    return Markup.inlineKeyboard(
-        [
-            Markup.callbackButton("✅ Approved", "approved"),
-            Markup.urlButton("🌍️ Open", url)
-        ]
-    );
-}
-
-function getLikeButton(cnt) {
-    return Markup.inlineKeyboard(
-        [
-            Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
-        ]
-    );
-}
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}

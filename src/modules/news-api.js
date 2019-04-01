@@ -12,17 +12,20 @@ function isToday(item, date) {
 function newsApi(url, date) {
     return new Promise((resolve, reject) => {
         request(url, (err, response, body) => {
-            if (err) reject(err);
+            if (err) {
+                reject(err);
+                return;
+            }
             xml2js(body, (err, result) => {
                 err ? reject(err) : resolve([
                     {
-                        title: result.rss.channel[0].item.map(event => {
+                        title: result.rss.channel[0].item.map((event) => {
                             return {
                                 day: event["title"][0].split("-")[0].trim(),
                                 title: event["title"][0].split("-")[1].trim(),
                                 description: event["description"][0].replace(/(\r\n|\n|\r)/gm, "")
                             }
-                        }).filter(item => isToday(item, date)).reduce((previousValue, currentValue, i) => {
+                        }).filter((item) => isToday(item, date)).reduce((previousValue, currentValue, i) => {
                             return previousValue + "\n\n" + (i === 0 ? "Поводы 🍻 именно сегодня, <i>" +
                                 currentValue["day"] + "</i>\n\n" : "") + "<b>" + currentValue["title"] + "</b> - " +
                                 currentValue["description"];
@@ -31,7 +34,7 @@ function newsApi(url, date) {
                         link: getEventURL("http://www.calend.ru/day/", date)
                     }
                 ]);
-            })
+            });
         });
     });
 }

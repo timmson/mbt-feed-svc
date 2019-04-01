@@ -13,7 +13,7 @@ function MessageApi() {
 
 MessageApi.prototype.sendMessage = function (message) {
     return new Promise(
-        resolve => {
+        (resolve) => {
             console.log(JSON.stringify(message, null, 2));
             resolve(0);
         },
@@ -23,11 +23,11 @@ MessageApi.prototype.sendMessage = function (message) {
 let messageApi = new MessageApi();
 
 
-config.topics.forEach(async topic => {
+config.topics.forEach(async (topic) => {
     try {
         let messages = await newsApi(topic.url, new Date());
         console.log(messages);
-        messages.forEach(async message =>
+        messages.forEach(async (message) =>
             await messageApi.sendMessage({
                 to: {
                     id: topic.channel,

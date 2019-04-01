@@ -22,7 +22,7 @@ function getTomorrow(date) {
 }
 
 function getTemperature(currentRecord) {
-    return currentRecord.temperature+ "℃" + ((currentRecord.temperature !== currentRecord.feelslike) ? "(ощущается как " + currentRecord.feelslike + "℃)" : "");
+    return currentRecord.temperature + "℃" + ((currentRecord.temperature !== currentRecord.feelslike) ? "(ощущается как " + currentRecord.feelslike + "℃)" : "");
 }
 
 function weatherApi(date) {
@@ -34,24 +34,24 @@ function weatherApi(date) {
         }, (err, result) => {
             if (err) {
                 reject(err);
-            } else {
-
-                let currentRecord = result[0]["current"];
-                let forecastRecord = result[0]["forecast"].filter(row => row.date === getTomorrow(date))[0];
-
-                resolve(["<b>Сегодня, " + formatDate(date) + "</b>",
-                        ["🌡", getTemperature(currentRecord)].join(" "),
-                        ["⛅", currentRecord.skytext].join(" "),
-                        ["💧 Влажность", currentRecord.humidity + "%"].join(" "),
-                        ["🌬 Ветер", currentRecord.winddisplay, ""].join(" "),
-                        "",
-                        "<b>Завтра, " + formatDate(new Date(forecastRecord.date)) + "</b>",
-                        ["🌡 от", forecastRecord.low + "℃", "до", forecastRecord.high + "℃"].join(" "),
-                        ["⛅", forecastRecord.skytextday].join(" ")
-                    ].join("\n")
-                );
-
+                return;
             }
+
+            let currentRecord = result[0]["current"];
+            let forecastRecord = result[0]["forecast"].filter((row) => row.date === getTomorrow(date))[0];
+
+            resolve(["<b>Сегодня, " + formatDate(date) + "</b>",
+                    ["🌡", getTemperature(currentRecord)].join(" "),
+                    ["⛅", currentRecord.skytext].join(" "),
+                    ["💧 Влажность", currentRecord.humidity + "%"].join(" "),
+                    ["🌬 Ветер", currentRecord.winddisplay, ""].join(" "),
+                    "",
+                    "<b>Завтра, " + formatDate(new Date(forecastRecord.date)) + "</b>",
+                    ["🌡 от", forecastRecord.low + "℃", "до", forecastRecord.high + "℃"].join(" "),
+                    ["⛅", forecastRecord.skytextday].join(" ")
+                ].join("\n")
+            );
+
         });
     });
 }

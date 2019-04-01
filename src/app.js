@@ -55,7 +55,7 @@ new CronJob({
     onTick: async () => {
         try {
             let text = await weatherApi(new Date());
-            config.to.forEach(async to => {
+            config.to.forEach(async (to) => {
                     try {
                         log.info(to.username + "[" + to.id + "]" + " <- " + text);
                         await bot.telegram.sendMessage(to.id, text, {parse_mode: "HTML"});
@@ -84,7 +84,7 @@ new CronJob({
     start: true
 });
 
-config.topics.forEach(topic => {
+config.topics.forEach((topic) => {
     log.info("Topic " + topic.name + " started at " + topic.cronTime);
     new CronJob(
         {
@@ -92,7 +92,7 @@ config.topics.forEach(topic => {
             onTick: async () => {
                 try {
                     let messages = await newsApi(topic.url, new Date());
-                    messages.forEach(async message => {
+                    messages.forEach(async (message) => {
                             try {
                                 log.info("channel: " + topic.channel + " <- " + message.title);
                                 await bot.telegram.sendMessage(topic.channel, message.title, Markup.inlineKeyboard([
@@ -152,7 +152,7 @@ bot.command("meme", async (ctx) => {
 
 bot.on("photo", async (ctx) => {
     let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
-    ctx.telegram.getFileLink(fileId).then(link =>
+    ctx.telegram.getFileLink(fileId).then((link) =>
         log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- " + link)
     );
     try {

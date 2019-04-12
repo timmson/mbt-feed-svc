@@ -6,7 +6,6 @@ log.level = "info";
 const Telegraf = require("telegraf");
 const Markup = require("telegraf/markup");
 
-const newsApi = require("./modules/news-api.js");
 const weatherApi = require("./modules/weather-api.js");
 const InstaApi = require("./modules/insta-api.js");
 
@@ -82,35 +81,6 @@ new CronJob({
         }
     },
     start: true
-});
-
-config.topics.forEach((topic) => {
-    log.info("Topic " + topic.name + " started at " + topic.cronTime);
-    new CronJob(
-        {
-            cronTime: topic.cronTime,
-            onTick: async () => {
-                try {
-                    let messages = await newsApi(topic.url, new Date());
-                    messages.forEach(async (message) => {
-                            try {
-                                log.info("channel: " + topic.channel + " <- " + message.title);
-                                await bot.telegram.sendMessage(topic.channel, message.title, Markup.inlineKeyboard([
-                                    Markup.urlButton("🌍️ Open", message.link),
-                                ]).extra({parse_mode: "HTML"}));
-
-                            } catch (err) {
-                                log.error(err);
-                            }
-                        }
-                    )
-                } catch (err) {
-                    log.error(err);
-                }
-            },
-            start: true
-        }
-    );
 });
 
 bot.on("callback_query", async (ctx) => {

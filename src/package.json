@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "cron": "1.7.0",
-    "instagram-private-api": "0.6.8",
+    "instagram-private-api": "1.14.1",
     "log4js": "4.1.0",
     "node-telegram-bot-api": "0.30.0",
     "prod-cal": "1.0.3",

@@ -5,7 +5,12 @@
 
 //const messageApi = new MessageApi(telegramBot);
 
-const weatherApi = require("./modules/weather-api");
+const weatherApi = require("weather-js");
+const ProdCalendar = require("prod-cal");
+const Calendar = require("./lib/calendar");
 
+const Weather = require("./lib/weather");
 
-weatherApi(new Date()).then(e => console.log(e));
+let weather = new Weather(new Calendar(new ProdCalendar("ru")), weatherApi);
+
+weather.get(new Date()).then(e => console.log(e));

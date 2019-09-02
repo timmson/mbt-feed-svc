@@ -67,6 +67,7 @@ describe("Weather should", () => {
             await weather.get(new Date(2019, 1, 1));
             expect(false).to.be.ok;
         } catch (e) {
+            expect(true).to.be.ok;
         }
     });
 });

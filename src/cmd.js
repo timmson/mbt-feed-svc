@@ -13,4 +13,4 @@ const Weather = require("./lib/weather");
 
 let weather = new Weather(new Calendar(new ProdCalendar("ru")), weatherApi);
 
-weather.get(new Date()).then(e => console.log(e));
+weather.get(new Date()).then((e) => console.log(e));

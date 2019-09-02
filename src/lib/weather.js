@@ -57,7 +57,7 @@ class Weather {
             ["<b>Завтра,", forecast.date + "</b>"].join(" "),
             ["🌡 от", forecast.low + "℃", "до", forecast.high + "℃"].join(" "),
             ["⛅", forecast.skytextday].join(" ")
-        ].join("\n")
+        ].join("\n");
     }
 
 }

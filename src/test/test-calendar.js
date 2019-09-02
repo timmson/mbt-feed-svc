@@ -6,9 +6,9 @@ class ProdCalendar {
 
     getCalendar(year, month, day) {
         if (day === 1) {
-            return "work"
+            return "work";
         } else if (day === 2) {
-            return "holiday"
+            return "holiday";
         } else {
             return "work_reduced";
         }

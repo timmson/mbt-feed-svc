@@ -14,6 +14,14 @@ const CronJob = require("cron").CronJob;
 const bot = new Telegraf(config.telegram.token);
 const instaApi = new InstaApi(config.instagram);
 
+function getReviewButton(name, url) {
+    return Markup.inlineKeyboard(
+        [
+            Markup.callbackButton("✅ Approved", "approved"),
+            Markup.urlButton(name, url)
+        ]
+    );
+}
 
 async function sendMemes() {
     let messages = await instaApi.notifyAboutMemes();
@@ -25,15 +33,6 @@ async function sendMemes() {
             log.error(err);
         }
     });
-}
-
-function getReviewButton(name, url) {
-    return Markup.inlineKeyboard(
-        [
-            Markup.callbackButton("✅ Approved", "approved"),
-            Markup.urlButton(name, url)
-        ]
-    );
 }
 
 function getLikeButton(cnt) {
@@ -57,7 +56,7 @@ new CronJob({
             config.to.forEach(async (to) => {
                     try {
                         log.info(to.username + " [" + to.id + "]" + " <- " + text);
-                        await bot.telegram.sendMessage(to.id, text, {parse_mode: "HTML"});
+                        await bot.telegram.sendMessage(to.id, text, {"parse_mode": "HTML"});
                     } catch (e) {
                         log.error(e);
                     }
@@ -116,7 +115,7 @@ bot.command("meme", async (ctx) => {
             await ctx.reply("Sorry:(");
         }
     } catch (err) {
-
+        log.error(err);
     }
 });
 

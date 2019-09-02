@@ -16,7 +16,7 @@ class Weather {
                     let forecastRecord = result[0]["forecast"].filter((row) => row.date === this.calendar.getTomorrow(date))[0];
                     forecastRecord.date = this.calendar.formatDate(new Date(forecastRecord.date));
 
-                    resolve(this.formatForecastForToday(currentRecord) + "\n" + this.formatForecastForTomorrow(forecastRecord));
+                    resolve(this.formatForecastForToday(currentRecord) + "\n\n" + this.formatForecastForTomorrow(forecastRecord));
                 } catch (e) {
                     reject(e);
                 }

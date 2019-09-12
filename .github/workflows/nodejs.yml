@@ -19,8 +19,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install
       run: |
-        cd src && npm i mocha nyc codecov  -g
-        cd src && npm i
+        npm i mocha nyc codecov  -g
+        npm i
+      path: src
     - name: Lint and coverage
       run: |
         cd src && npm run lint

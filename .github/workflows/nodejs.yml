@@ -19,13 +19,15 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install
       run: |
+        cd ./src
         npm i mocha nyc codecov  -g
         npm i
       path: src
     - name: Lint and coverage
       run: |
-        cd src && npm run lint
-        cd src && npm run coverage && codecov
+        cd ./src
+        npm run lint
+        npm run coverage && codecov
       env:
         CI: true
         CODECOV_TOKEN: e017451c-146d-46cb-b1b3-d7932042bd9c

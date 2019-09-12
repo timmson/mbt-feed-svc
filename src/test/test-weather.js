@@ -4,70 +4,70 @@ require("mocha");
 
 class Calendar {
 
-    formatDate(date) {
-        return "X";
-    }
+	formatDate() {
+		return "X";
+	}
 
-    getTomorrow(date) {
-        return "Y";
-    }
+	getTomorrow() {
+		return "Y";
+	}
 
 }
 
 
 class WeatherApi {
 
-    find(request, cb) {
-        cb(null, [
-            {
-                current: {},
-                forecast: [
-                    {
-                        date: "Y"
-                    }
-                ]
-            }
-        ]);
-    }
+	find(request, cb) {
+		cb(null, [
+			{
+				current: {},
+				forecast: [
+					{
+						date: "Y"
+					}
+				]
+			}
+		]);
+	}
 
 }
 
 class WeatherFailApi {
 
-    find(request, cb) {
-        cb(new Error(""), null);
-    }
+	find(request, cb) {
+		cb(new Error(""), null);
+	}
 
 }
 
 describe("Weather should", () => {
 
-    it("return today and tomorrow forecast", async () => {
-        let weather = new Weather(new Calendar(), new WeatherApi());
+	it("return today and tomorrow forecast", async () => {
+		let weather = new Weather(new Calendar(), new WeatherApi());
 
-        let result = await weather.get(new Date(2019, 1, 1));
+		let result = await weather.get(new Date(2019, 1, 1));
 
-        expect(result).to.not.be.null;
-    });
+		expect(result).to.not.be.null;
+	});
 
-    it("return today forecast when feelslike is differ from temperature", async () => {
-        let weather = new Weather(new Calendar(), null);
+	it("return today forecast when feelslike is differ from temperature", async () => {
+		let weather = new Weather(new Calendar(), null);
 
-        let result = weather.formatForecastForToday({
-            temperature: "A",
-            feelslike: "B"
-        });
+		let result = weather.formatForecastForToday({
+			temperature: "A",
+			feelslike: "B"
+		});
 
-        expect(result).to.not.be.null;
-    });
+		expect(result).to.not.be.null;
+	});
 
-    it("fail when weatherApi fails", async () => {
-        let weather = new Weather(new Calendar(), new WeatherFailApi());
-        try {
-            await weather.get(new Date(2019, 1, 1));
-            expect(false).to.be.ok;
-        } catch (e) {
-            expect(true).to.be.ok;
-        }
-    });
+	it("fail when weatherApi fails", async () => {
+		let weather = new Weather(new Calendar(), new WeatherFailApi());
+		try {
+			await weather.get(new Date(2019, 1, 1));
+			expect(false).to.be.ok;
+		} catch (e) {
+			expect(true).to.be.ok;
+		}
+	});
 });

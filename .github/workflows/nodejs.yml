@@ -1,0 +1,30 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install
+      run: |
+        cd src && npm i mocha nyc codecov  -g
+        cd src && npm i
+    - name: Lint and coverage
+      run: |
+        cd src && npm run lint
+        cd src && npm run coverage && codecov
+      env:
+        CI: true
+        CODECOV_TOKEN: e017451c-146d-46cb-b1b3-d7932042bd9c

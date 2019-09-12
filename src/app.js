@@ -15,128 +15,128 @@ const bot = new Telegraf(config.telegram.token);
 const instaApi = new InstaApi(config.instagram);
 
 function getReviewButton(name, url) {
-    return Markup.inlineKeyboard(
-        [
-            Markup.callbackButton("✅ Approved", "approved"),
-            Markup.urlButton(name, url)
-        ]
-    );
+	return Markup.inlineKeyboard(
+		[
+			Markup.callbackButton("✅ Approved", "approved"),
+			Markup.urlButton(name, url)
+		]
+	);
 }
 
 async function sendMemes() {
-    let messages = await instaApi.notifyAboutMemes();
-    messages.forEach(async (message) => {
-        try {
-            log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + message.image);
-            await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton("🌍️ Open", message.post).extra());
-        } catch (err) {
-            log.error(err);
-        }
-    });
+	let messages = await instaApi.notifyAboutMemes();
+	messages.forEach(async (message) => {
+		try {
+			log.info(config.to[0].username + " [" + config.to[0].id + "] <- " + message.image);
+			await bot.telegram.sendPhoto(config.to[0].id, message.image, getReviewButton("🌍️ Open", message.post).extra());
+		} catch (err) {
+			log.error(err);
+		}
+	});
 }
 
 function getLikeButton(cnt) {
-    return Markup.inlineKeyboard(
-        [
-            Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
-        ]
-    );
+	return Markup.inlineKeyboard(
+		[
+			Markup.callbackButton("👍" + cnt, "" + (cnt + 1))
+		]
+	);
 }
 
 function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
+	return Math.floor(Math.random() * (max - min)) + min;
 }
 
 log.info("Topic Weather started at " + config.cron.weather);
 new CronJob({
-    cronTime: config.cron.weather,
-    onTick: async () => {
-        try {
-            let text = await weatherApi(new Date());
-            config.to.forEach(async (to) => {
-                    try {
-                        log.info(to.username + " [" + to.id + "]" + " <- " + text);
-                        await bot.telegram.sendMessage(to.id, text, {"parse_mode": "HTML"});
-                    } catch (e) {
-                        log.error(e);
-                    }
-                }
-            );
-        } catch (err) {
-            log.error(err);
-        }
-    },
-    start: true
+	cronTime: config.cron.weather,
+	onTick: async () => {
+		try {
+			let text = await weatherApi(new Date());
+			config.to.forEach(async (to) => {
+				try {
+					log.info(to.username + " [" + to.id + "]" + " <- " + text);
+					await bot.telegram.sendMessage(to.id, text, {"parse_mode": "HTML"});
+				} catch (e) {
+					log.error(e);
+				}
+			}
+			);
+		} catch (err) {
+			log.error(err);
+		}
+	},
+	start: true
 });
 
 log.info("Topic Insta started at " + config.instagram.cronTime);
 new CronJob({
-    cronTime: config.instagram.cronTime,
-    onTick: async () => {
-        try {
-            await sendMemes();
-        } catch (err) {
-            log.error(err);
-        }
-    },
-    start: true
+	cronTime: config.instagram.cronTime,
+	onTick: async () => {
+		try {
+			await sendMemes();
+		} catch (err) {
+			log.error(err);
+		}
+	},
+	start: true
 });
 
 bot.on("callback_query", async (ctx) => {
-        try {
-            if (ctx.callbackQuery.data === "approved") {
-                let fileId = ctx.callbackQuery.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
-                await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)).extra());
-                await ctx.answerCbQuery("Posted");
-            } else {
-                await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data)));
-            }
-        } catch (err) {
-            log.error(err);
-        }
-    }
+	try {
+		if (ctx.callbackQuery.data === "approved") {
+			let fileId = ctx.callbackQuery.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
+			await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)).extra());
+			await ctx.answerCbQuery("Posted");
+		} else {
+			await ctx.editMessageReplyMarkup(getLikeButton(parseInt(ctx.callbackQuery.data)));
+		}
+	} catch (err) {
+		log.error(err);
+	}
+}
 );
 
 bot.command("start", async (ctx) => {
-    log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /start");
-    try {
-        await ctx.reply("Ok! Now send funny picture to me");
-    } catch (err) {
-        log.error(err);
-    }
+	log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /start");
+	try {
+		await ctx.reply("Ok! Now send funny picture to me");
+	} catch (err) {
+		log.error(err);
+	}
 });
 
 bot.command("meme", async (ctx) => {
-    log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /meme");
-    try {
-        if (config.to[0].id === ctx.message.from.id) {
-            await sendMemes();
-        } else {
-            await ctx.reply("Sorry:(");
-        }
-    } catch (err) {
-        log.error(err);
-    }
+	log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /meme");
+	try {
+		if (config.to[0].id === ctx.message.from.id) {
+			await sendMemes();
+		} else {
+			await ctx.reply("Sorry:(");
+		}
+	} catch (err) {
+		log.error(err);
+	}
 });
 
 bot.on("photo", async (ctx) => {
-    let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
-    ctx.telegram.getFileLink(fileId).then((link) =>
-        log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- " + link)
-    );
-    try {
-        if (config.to[0].id === ctx.message.from.id) {
-            await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)).extra());
-        } else {
-            /**TODO
+	let fileId = ctx.message.photo.sort((a, b) => (a.file_size > b.file_size ? 1 : -1)).pop().file_id;
+	ctx.telegram.getFileLink(fileId).then((link) =>
+		log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- " + link)
+	);
+	try {
+		if (config.to[0].id === ctx.message.from.id) {
+			await bot.telegram.sendPhoto(config.instagram.channel, fileId, getLikeButton(getRandomInt(0, 15)).extra());
+		} else {
+			/**TODO
              *
              */
-            await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton(ctx.message.from.username || ctx.message.from.id  , "https://t.me/" + ctx.message.from.username).extra());
-            await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
-        }
-    } catch (err) {
-        log.error(err);
-    }
+			await bot.telegram.sendPhoto(config.to[0].id, ctx.message.photo[0]["file_id"], getReviewButton(ctx.message.from.username || ctx.message.from.id  , "https://t.me/" + ctx.message.from.username).extra());
+			await ctx.reply("OK! Admin will review your picture very soon and can be post it to @tmsnInstaMemes");
+		}
+	} catch (err) {
+		log.error(err);
+	}
 });
 
 bot.startPolling();
@@ -146,11 +146,11 @@ log.info("Service has started");
 log.info("Please press [CTRL + C] to stop");
 
 process.on("SIGINT", () => {
-    log.info("Service has stopped");
-    process.exit(0);
+	log.info("Service has stopped");
+	process.exit(0);
 });
 
 process.on("SIGTERM", () => {
-    log.info("Service has stopped");
-    process.exit(0);
+	log.info("Service has stopped");
+	process.exit(0);
 });

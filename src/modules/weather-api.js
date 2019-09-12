@@ -6,7 +6,7 @@ const Weather = require("../lib/weather");
 let weather = new Weather(new Calendar(new ProdCalendar("ru")), weatherJS);
 
 function weatherApi(date) {
-    return weather.get(date);
+	return weather.get(date);
 }
 
 module.exports = weatherApi;

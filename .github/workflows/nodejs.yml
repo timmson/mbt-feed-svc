@@ -22,7 +22,6 @@ jobs:
         cd ./src
         npm i mocha nyc codecov  -g
         npm i
-      path: src
     - name: Lint and coverage
       run: |
         cd ./src

@@ -7,6 +7,4 @@ services:
       context: .
       args:
         - username=user
-        - config_server
-        - config_path=/mbt-feed-svc/config.js
     restart: always

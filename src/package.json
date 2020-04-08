@@ -1,12 +1,12 @@
 {
   "name": "mbt-feed-svc",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Feed collector",
   "main": "app.js",
   "private": true,
   "dependencies": {
     "cron": "1.7.0",
-    "instagram-private-api": "1.14.1",
+    "instagram-private-api": "1.39.2",
     "log4js": "6.1.2",
     "node-telegram-bot-api": "0.30.0",
     "prod-cal": "1.1.5",

@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "cron": "1.7.0",
+    "inquirer": "7.1.0",
     "instagram-private-api": "1.39.2",
     "log4js": "6.1.2",
     "node-telegram-bot-api": "0.30.0",

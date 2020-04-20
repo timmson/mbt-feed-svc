@@ -74,7 +74,7 @@ new CronJob({
 	cronTime: config.instagram.cronTime,
 	onTick: async () => {
 		try {
-			//await sendMemes();
+			await sendMemes();
 		} catch (err) {
 			log.error(err);
 		}

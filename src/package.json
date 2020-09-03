@@ -7,9 +7,9 @@
   "dependencies": {
     "cron": "1.7.0",
     "inquirer": "7.1.0",
-    "instagram-private-api": "1.39.2",
+    "instagram-private-api": "1.41.0",
     "log4js": "6.1.2",
-    "node-telegram-bot-api": "0.30.0",
+    "node-telegram-bot-api": "0.50.0",
     "prod-cal": "1.1.5",
     "request": "2.88.0",
     "telegraf": "3.28.0",

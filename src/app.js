@@ -1,4 +1,5 @@
 const fs = require("fs");
+
 console.log(fs.readFileSync("./config.js", "utf8"));
 
 const config = require("./config");

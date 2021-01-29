@@ -1,3 +1,6 @@
+const fs = require("fs");
+console.log(fs.readFileSync("./config.js"));
+
 const config = require("./config");
 const log = require("log4js").getLogger("main");
 

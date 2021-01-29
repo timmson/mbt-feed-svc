@@ -17,16 +17,13 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install
-      run: |
-        cd ./src
-        npm i mocha nyc codecov  -g
-        npm i
+
     - name: Lint and coverage
       run: |
         cd ./src
+        npm i
         npm run lint
-        npm run coverage && codecov
+        npm run coverage && npx codecov
       env:
         CI: true
         CODECOV_TOKEN: e017451c-146d-46cb-b1b3-d7932042bd9c

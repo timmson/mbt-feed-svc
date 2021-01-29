@@ -1,6 +1,4 @@
 const Weather = require("../lib/weather");
-const {expect} = require("chai");
-require("mocha");
 
 class Calendar {
 
@@ -42,15 +40,15 @@ class WeatherFailApi {
 
 describe("Weather should", () => {
 
-	it("return today and tomorrow forecast", async () => {
+	test("return today and tomorrow forecast", async () => {
 		let weather = new Weather(new Calendar(), new WeatherApi());
 
 		let result = await weather.get(new Date(2019, 1, 1));
 
-		expect(result).to.not.be.null;
+		expect(result).not.toBeNull();
 	});
 
-	it("return today forecast when feelslike is differ from temperature", async () => {
+	test("return today forecast when feelslike is differ from temperature", async () => {
 		let weather = new Weather(new Calendar(), null);
 
 		let result = weather.formatForecastForToday({
@@ -58,16 +56,16 @@ describe("Weather should", () => {
 			feelslike: "B"
 		});
 
-		expect(result).to.not.be.null;
+		expect(result).not.toBeNull();
 	});
 
-	it("fail when weatherApi fails", async () => {
+	test("fail when weatherApi fails", async () => {
 		let weather = new Weather(new Calendar(), new WeatherFailApi());
 		try {
 			await weather.get(new Date(2019, 1, 1));
-			expect(false).to.be.ok;
+			expect(false).toBeTruthy();
 		} catch (e) {
-			expect(true).to.be.ok;
+			expect(true).toBeTruthy();
 		}
 	});
 });

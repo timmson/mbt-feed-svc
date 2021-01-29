@@ -51,6 +51,16 @@ bot.command("start", async (ctx) => {
     }
 });
 
+bot.command("stock", async (ctx) => {
+    log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /stock");
+    try {
+        let text = await stockApi();
+        await ctx.reply(text);
+    } catch (err) {
+        log.error(err);
+    }
+});
+
 bot.startPolling();
 bot.telegram.sendMessage(config.to.id, "Started at " + new Date()).catch((err) => log.error(err));
 

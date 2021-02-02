@@ -6,7 +6,7 @@ log.level = "info";
 const Telegraf = require("telegraf");
 
 const weatherApi = require("./modules/weather-api");
-const stockApi = require("./modules/stock-api")
+const stockApi = require("./modules/stock-api");
 const CronJob = require("cron").CronJob;
 
 const bot = new Telegraf(config.telegram.token);

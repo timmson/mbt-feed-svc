@@ -3,7 +3,7 @@ const Moex = require("../lib/moex");
 const moex = new Moex(new MoexAPI());
 
 function stockAPI() {
-    return moex.getMessage();
+	return moex.getMessage();
 }
 
 module.exports = stockAPI;

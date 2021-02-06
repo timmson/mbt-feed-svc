@@ -3,6 +3,10 @@ const Calendar = require("../lib/calendar");
 class ProdCalendar {
 
 	getCalendar(year, month, day) {
+		if (year instanceof Date) {
+			day = year.getDate();
+		}
+
 		if (day === 1) {
 			return "work";
 		} else if (day === 2) {

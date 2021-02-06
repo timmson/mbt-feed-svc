@@ -37,8 +37,7 @@ new CronJob({
 	cronTime: cron.stock,
 	onTick: async () => {
 		try {
-			const today = new Date();
-			if (!prodCalendar.getCalendar(today.getFullYear(), today.getMonth() + 1, today.getDate()) === "holiday") {
+			if (!prodCalendar.getCalendar(new Date()) === "holiday") {
 				let text = await stockApi();
 				log.info(`${config.to.username} [${config.to.id}] <- ${text}`);
 				await bot.telegram.sendMessage(config.to.id, text, {"parse_mode": "HTML"});

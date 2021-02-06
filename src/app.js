@@ -1,15 +1,16 @@
 const config = require("./config");
 const log = require("log4js").getLogger("main");
 
-log.level = "info";
-
 const Telegraf = require("telegraf");
+const ProdCalendar = require("prod-cal");
 
 const weatherApi = require("./modules/weather-api");
 const stockApi = require("./modules/stock-api");
 const CronJob = require("cron").CronJob;
 
+log.level = "info";
 const bot = new Telegraf(config.telegram.token);
+const prodCalendar = new ProdCalendar("ru");
 
 const cron = {
 	weather: "0 0 7,17 * * *",
@@ -22,7 +23,7 @@ new CronJob({
 	onTick: async () => {
 		try {
 			let text = await weatherApi(new Date());
-			log.info(config.to.username + " [" + config.to.id + "]" + " <- " + text);
+			log.info(`${config.to.username} [${config.to.id}] <- ${text}`);
 			await bot.telegram.sendMessage(config.to.id, text, {"parse_mode": "HTML"});
 		} catch (err) {
 			log.error(err);
@@ -36,9 +37,14 @@ new CronJob({
 	cronTime: cron.stock,
 	onTick: async () => {
 		try {
-			let text = await stockApi();
-			log.info(config.to.username + " [" + config.to.id + "]" + " <- " + text);
-			await bot.telegram.sendMessage(config.to.id, text, {"parse_mode": "HTML"});
+			const today = new Date();
+			if (!prodCalendar.getCalendar(today.getFullYear(), today.getMonth() + 1, today.getDate()) === "holiday") {
+				let text = await stockApi();
+				log.info(`${config.to.username} [${config.to.id}] <- ${text}`);
+				await bot.telegram.sendMessage(config.to.id, text, {"parse_mode": "HTML"});
+			} else {
+				log.info("Stock - nothing to send");
+			}
 		} catch (e) {
 			log.error(e);
 		}
@@ -48,7 +54,7 @@ new CronJob({
 
 
 bot.command("start", async (ctx) => {
-	log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /start");
+	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /start`);
 	try {
 		await ctx.reply("Ok! Now send funny picture to me");
 	} catch (err) {
@@ -57,22 +63,22 @@ bot.command("start", async (ctx) => {
 });
 
 bot.command("stock", async (ctx) => {
-	log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /stock");
+	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /stock`);
 	try {
 		let text = await stockApi();
-		log.info(config.to.username + " [" + config.to.id + "]" + " <- " + text);
-		await ctx.reply(text);
+		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`);
+		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"});
 	} catch (err) {
 		log.error(err);
 	}
 });
 
 bot.command("weather", async (ctx) => {
-	log.info(ctx.message.from.username + " [" + ctx.message.from.id + "]" + " <- /weather");
+	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /weather`);
 	try {
 		let text = await weatherApi(new Date());
-		log.info(config.to.username + " [" + config.to.id + "]" + " <- " + text);
-		await ctx.reply(text);
+		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`);
+		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"});
 	} catch (err) {
 		log.error(err);
 	}

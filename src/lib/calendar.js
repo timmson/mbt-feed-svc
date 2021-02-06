@@ -14,7 +14,7 @@ class Calendar {
 	}
 
 	formatDate(date) {
-		let dayType = this.prodCalendar.getCalendar(date.getFullYear(), date.getMonth() + 1, date.getDate());
+		let dayType = this.prodCalendar.getCalendar(date);
 		return [date.getDate(), this.months[date.getMonth()] + ",", this.dayTypes[dayType]].join(" ");
 	}
 

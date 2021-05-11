@@ -13,8 +13,8 @@ class Moex {
 			]).then((result) => {
 				resolve([
 					"💰" + result[0].toFixed(2),
-					"🇺🇸" + (result[1]).toFixed(2),
-					"🇨🇳" + (result[2]).toFixed(2)
+					"🇺🇸" + (result[1]).toFixed(4),
+					"🇨🇳" + (result[2]).toFixed(4)
 				].join(", ")
 				);
 			}).catch((err) => reject(err));

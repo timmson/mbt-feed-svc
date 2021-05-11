@@ -21,7 +21,7 @@ describe("Moex", () => {
 
 	test("info", () => {
 		return moex.getMessage()
-			.then((result) => expect(result).toEqual("💰75.00, 🇺🇸12.00, 🇨🇳11.00"))
+			.then((result) => expect(result).toEqual("💰75.00, 🇺🇸12.0000, 🇨🇳11.0000"))
 			.catch((e) => expect(e).toBeUndefined());
 	});
 

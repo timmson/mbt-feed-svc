@@ -7,8 +7,8 @@
   "dependencies": {
     "cron": "1.7.0",
     "log4js": "6.1.2",
-    "moex-api": "^1.0.4",
-    "prod-cal": "^1.2.7",
+    "moex-api": "^1.0.5",
+    "prod-cal": "^1.2.9",
     "request": "2.88.0",
     "telegraf": "3.28.0",
     "weather-js": "2.0.0",

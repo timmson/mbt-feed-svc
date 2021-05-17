@@ -6,8 +6,8 @@ class MockMoexAPI {
 			node: {
 				last: {
 					"USD000UTSTOM": "75.00",
-					"VTBA": "12.00",
-					"VTBE": "11.00"
+					"VTBA": "1.20",
+					"VTBE": "1.10"
 				}[ticker]
 			}
 		})
@@ -21,7 +21,7 @@ describe("Moex", () => {
 
 	test("info", () => {
 		return moex.getMessage()
-			.then((result) => expect(result).toEqual("💰75.00, 🇺🇸12.0000, 🇨🇳11.0000"))
+			.then((result) => expect(result).toEqual("💰75.00, 🇺🇸1.2000 (3490), 🇨🇳1.1000"))
 			.catch((e) => expect(e).toBeUndefined());
 	});
 

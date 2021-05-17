@@ -1,4 +1,4 @@
-const Moex = require("../lib/moex");
+const Moex = require("../lib/stock");
 
 class MockMoexAPI {
 	securityMarketData(ticker) {
@@ -15,13 +15,19 @@ class MockMoexAPI {
 	}
 }
 
-describe("Moex", () => {
+class MockYahooAPI {
+	getCurrentPrice() {
+		return Promise.resolve(3488);
+	}
+}
 
-	const moex = new Moex(new MockMoexAPI());
+describe("Moex and Yahoo", () => {
+
+	const moex = new Moex(new MockMoexAPI(), new MockYahooAPI());
 
 	test("info", () => {
 		return moex.getMessage()
-			.then((result) => expect(result).toEqual("💰75.00, 🇺🇸1.2000 (3488), 🇨🇳1.1000"))
+			.then((result) => expect(result).toEqual("💰75.00, 🇺🇸3488.00, 🇨🇳1.1000"))
 			.catch((e) => expect(e).toBeUndefined());
 	});
 

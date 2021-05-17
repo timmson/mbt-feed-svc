@@ -12,7 +12,8 @@
     "request": "2.88.0",
     "telegraf": "3.28.0",
     "weather-js": "2.0.0",
-    "xml2js": "0.4.17"
+    "xml2js": "0.4.17",
+    "yahoo-stock-prices": "1.1.0"
   },
   "scripts": {
     "start": "node app.js",

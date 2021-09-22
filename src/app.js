@@ -14,7 +14,8 @@ const prodCalendar = new ProdCalendar("ru");
 
 const cron = {
 	weather: "0 0 7,17 * * *",
-	stock: "0 50 9-23/2 * * * "
+	/*stock: "0 50 9-23/2 * * * "*/
+	stock: "0 * * * * *"
 };
 
 log.info(`Topic Weather started at ${cron.weather}`);
@@ -39,8 +40,8 @@ new CronJob({
 		try {
 			if (prodCalendar.getCalendar(new Date()) !== "holiday") {
 				let text = await stockApi();
-				log.info(`${config.to.username} [${config.to.id}] <- ${text}`);
-				await bot.telegram.sendMessage(config.to.id, text, {"parse_mode": "HTML"});
+				log.info(`${config.stockChannel} [${config.stockChannel}] <- ${text}`);
+				await bot.telegram.sendMessage(config.stockChannel, text, {"parse_mode": "HTML"});
 			} else {
 				log.info("Stock - nothing to send");
 			}

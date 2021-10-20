@@ -14,7 +14,7 @@ const prodCalendar = new ProdCalendar("ru");
 
 const cron = {
 	weather: "0 0 7,17 * * *",
-	stock: "0 05 10-22/3 * * * "
+	stock: "0 5 10-22/3 * * * "
 };
 
 log.info(`Topic Weather started at ${cron.weather}`);

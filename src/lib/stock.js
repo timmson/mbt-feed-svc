@@ -10,13 +10,13 @@ class Stock {
 			Promise.all([
 				this.getTickerPriceFromMoex("USD000UTSTOM"),
 				this.getTickerPriceFromYahoo("^GSPC"),
-				this.getTickerPriceFromMoex("VTBE", "USD"),
+				this.getTickerPriceFromYahoo("000001.SS"),
 				this.getTickerPriceFromYahoo("IMOEX.ME")
 			]).then((result) => {
 				resolve([
 					"💰" + result[0].toFixed(2),
 					"🇺🇸" + (result[1]).toFixed(2),
-					"🇨🇳" + (result[2]).toFixed(4),
+					"🇨🇳" + (result[2]).toFixed(2),
 					"🇷🇺" + (result[3]).toFixed(2),
 				].join(", ")
 				);

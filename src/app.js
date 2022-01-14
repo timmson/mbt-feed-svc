@@ -91,6 +91,7 @@ bot.on("text", async (ctx) => {
 		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`);
 		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${text}`, {"parse_mode": "HTML"});
 	} catch (err) {
+		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: not found. If you would like to search stocks at MOEX, please add ".me" at the end like "sber.me"`, {"parse_mode": "HTML"});
 		log.error(err);
 	}
 });

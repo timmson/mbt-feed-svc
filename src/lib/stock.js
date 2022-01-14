@@ -38,7 +38,7 @@ class Stock {
 	getTickerPriceFromYahoo(ticker) {
 		return new Promise(async (resolve, reject) => {
 			try {
-				let securityPrice = await this.yahooApi.getCurrentPrice(ticker);
+				let securityPrice = await this.yahooApi.getCurrentPrice(ticker.toUpperCase());
 				resolve(parseFloat(securityPrice));
 			} catch (e) {
 				reject(e);

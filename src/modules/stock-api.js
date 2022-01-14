@@ -4,8 +4,15 @@ const YahooAPI = require("yahoo-stock-prices");
 const Stock = require("../lib/stock");
 const stock = new Stock(new MoexAPI(), YahooAPI);
 
-function stockAPI() {
-	return stock.getMessage();
+class StockAPI {
+
+	getPrice(ticker) {
+		return stock.getTickerPriceFromYahoo(ticker);
+	}
+
+	getMessage() {
+		return stock.getMessage();
+	}
 }
 
-module.exports = stockAPI;
+module.exports = StockAPI;

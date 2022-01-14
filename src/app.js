@@ -5,7 +5,8 @@ const Telegraf = require("telegraf");
 const ProdCalendar = require("prod-cal");
 
 const weatherApi = require("./modules/weather-api");
-const stockApi = require("./modules/stock-api");
+const StockApi = require("./modules/stock-api");
+const stockApi = new StockApi();
 const CronJob = require("cron").CronJob;
 
 log.level = "info";
@@ -64,7 +65,7 @@ bot.command("start", async (ctx) => {
 bot.command("stock", async (ctx) => {
 	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /stock`);
 	try {
-		let text = await stockApi();
+		let text = await stockApi.getMessage();
 		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`);
 		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"});
 	} catch (err) {
@@ -78,6 +79,17 @@ bot.command("weather", async (ctx) => {
 		let text = await weatherApi(new Date());
 		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`);
 		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"});
+	} catch (err) {
+		log.error(err);
+	}
+});
+
+bot.on("text", async (ctx) => {
+	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${ctx.message.text}`);
+	try {
+		let text = await stockApi.getPrice(ctx.message.text);
+		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`);
+		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${text}`, {"parse_mode": "HTML"});
 	} catch (err) {
 		log.error(err);
 	}

@@ -39,7 +39,7 @@ new CronJob({
 	onTick: async () => {
 		try {
 			if (prodCalendar.getCalendar(new Date()) !== "holiday") {
-				let text = await stockApi();
+				let text = await stockApi.getMessage();
 				log.info(`${config.stockChannel} [${config.stockChannel}] <- ${text}`);
 				await bot.telegram.sendMessage(config.stockChannel, text, {"parse_mode": "HTML"});
 			} else {

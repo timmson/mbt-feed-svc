@@ -1,8 +1,14 @@
+const log = require("log4js").getLogger("stock");
+log.level = "info";
+
 class Stock {
 
-	constructor(moexApi, yahooApi) {
+	constructor(moexApi, yahooApi, timeout) {
 		this.moexApi = moexApi;
 		this.yahooApi = yahooApi;
+		this.times = 0;
+		this.maxTried = 2;
+		this.timeout = timeout || 2;
 	}
 
 	getMessage() {
@@ -14,11 +20,11 @@ class Stock {
 				this.getTickerPriceFromYahoo("IMOEX.ME")
 			]).then((result) => {
 				resolve([
-					"💰" + result[0].toFixed(2),
-					"🇺🇸" + (result[1]).toFixed(2),
-					"🇨🇳" + (result[2]).toFixed(2),
-					"🇷🇺" + (result[3]).toFixed(2),
-				].join(", ")
+						"💰" + result[0].toFixed(2),
+						"🇺🇸" + (result[1]).toFixed(2),
+						"🇨🇳" + (result[2]).toFixed(2),
+						"🇷🇺" + (result[3]).toFixed(2),
+					].join(", ")
 				);
 			}).catch((err) => reject(err));
 		}));
@@ -27,10 +33,21 @@ class Stock {
 	getTickerPriceFromMoex(ticker, currency) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				log.info(`Calling securityMarketData ${this.times + 1} of ${this.maxTried + 1}...`);
 				let security = await this.moexApi.securityMarketData(ticker, currency);
+				this.times = 0;
+				log.info("...OK");
 				resolve(parseFloat(security.node.last));
 			} catch (e) {
-				reject(e);
+				log.error(e);
+				if (this.times < this.maxTried) {
+					this.times++;
+					log.error(`Wait ${this.timeout}s until next try...`);
+					setTimeout(() => this.getTickerPriceFromMoex(ticker, currency)
+						.then((result) => resolve(result), (error) => reject(error)), this.timeout * 1000);
+				} else {
+					reject(e);
+				}
 			}
 		});
 	}

@@ -1,13 +1,13 @@
-const Weather = require("../lib/weather");
+const Weather = require("../lib/weather")
 
 class Calendar {
 
 	formatDate() {
-		return "X";
+		return "X"
 	}
 
 	getTomorrow() {
-		return "Y";
+		return "Y"
 	}
 
 }
@@ -25,7 +25,7 @@ class WeatherApi {
 					}
 				]
 			}
-		]);
+		])
 	}
 
 }
@@ -33,7 +33,7 @@ class WeatherApi {
 class WeatherFailApi {
 
 	find(request, cb) {
-		cb(new Error(""), null);
+		cb(new Error(""), null)
 	}
 
 }
@@ -41,31 +41,31 @@ class WeatherFailApi {
 describe("Weather should", () => {
 
 	test("return today and tomorrow forecast", async () => {
-		let weather = new Weather(new Calendar(), new WeatherApi());
+		let weather = new Weather(new Calendar(), new WeatherApi())
 
-		let result = await weather.get(new Date(2019, 1, 1));
+		let result = await weather.get(new Date(2019, 1, 1))
 
-		expect(result).not.toBeNull();
-	});
+		expect(result).not.toBeNull()
+	})
 
 	test("return today forecast when feelslike is differ from temperature", async () => {
-		let weather = new Weather(new Calendar(), null);
+		let weather = new Weather(new Calendar(), null)
 
 		let result = weather.formatForecastForToday({
 			temperature: "A",
 			feelslike: "B"
-		});
+		})
 
-		expect(result).not.toBeNull();
-	});
+		expect(result).not.toBeNull()
+	})
 
 	test("fail when weatherApi fails", async () => {
-		let weather = new Weather(new Calendar(), new WeatherFailApi());
+		let weather = new Weather(new Calendar(), new WeatherFailApi())
 		try {
-			await weather.get(new Date(2019, 1, 1));
-			expect(false).toBeTruthy();
+			await weather.get(new Date(2019, 1, 1))
+			expect(false).toBeTruthy()
 		} catch (e) {
-			expect(true).toBeTruthy();
+			expect(true).toBeTruthy()
 		}
-	});
-});
+	})
+})

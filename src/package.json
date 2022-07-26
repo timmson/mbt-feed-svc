@@ -1,6 +1,6 @@
 {
   "name": "mbt-feed-svc",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Feed collector",
   "main": "app.js",
   "private": true,

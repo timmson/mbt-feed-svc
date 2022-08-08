@@ -14,7 +14,7 @@ class Calendar {
 	}
 
 	formatDate(date) {
-		let dayType = this.prodCalendar.getDay(date)
+		let dayType = this.prodCalendar.getDate(date)
 		return [date.getDate(), this.months[date.getMonth()] + ",", this.dayTypes[dayType]].join(" ")
 	}
 

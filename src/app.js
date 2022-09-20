@@ -4,7 +4,6 @@ const log = require("log4js").getLogger("main")
 const Telegraf = require("telegraf")
 const ProdCalendar = require("prod-cal")
 
-const weatherApi = require("./modules/weather-api")
 const StockApi = require("./modules/stock-api")
 const stockApi = new StockApi()
 const CronJob = require("cron").CronJob
@@ -14,24 +13,8 @@ const bot = new Telegraf(config.telegram.token)
 const prodCalendar = new ProdCalendar("ru")
 
 const cron = {
-	weather: "0 0 7,17 * * *",
-	stock: "0 5 10-22/3 * * * "
+	stock: "0 5 17 * * * "
 }
-
-log.info(`Topic Weather started at ${cron.weather}`)
-new CronJob({
-	cronTime: cron.weather,
-	onTick: async () => {
-		try {
-			let text = await weatherApi(new Date())
-			log.info(`${config.to.username} [${config.to.id}] <- ${text}`)
-			await bot.telegram.sendMessage(config.to.id, text, {"parse_mode": "HTML"})
-		} catch (err) {
-			log.error(err)
-		}
-	},
-	start: true
-})
 
 log.info(`Topic Stock started at ${cron.stock}`)
 new CronJob({
@@ -66,17 +49,6 @@ bot.command("stock", async (ctx) => {
 	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /stock`)
 	try {
 		let text = await stockApi.getMessage()
-		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`)
-		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"})
-	} catch (err) {
-		log.error(err)
-	}
-})
-
-bot.command("weather", async (ctx) => {
-	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /weather`)
-	try {
-		let text = await weatherApi(new Date())
 		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`)
 		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"})
 	} catch (err) {

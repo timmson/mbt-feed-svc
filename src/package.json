@@ -5,14 +5,14 @@
   "main": "app.js",
   "private": true,
   "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "cron": "^1.8.3",
     "log4js": "^6.6.1",
     "moex-api": "^1.1.1",
     "prod-cal": "^2.0.0",
     "request": "^2.88.2",
     "telegraf": "^3.40.0",
-    "xml2js": "^0.4.23",
-    "yahoo-stock-prices": "^1.1.0"
+    "xml2js": "^0.4.23"
   },
   "scripts": {
     "start": "node app.js",

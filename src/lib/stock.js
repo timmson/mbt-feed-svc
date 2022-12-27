@@ -3,9 +3,9 @@ log.level = "info"
 
 class Stock {
 
-	constructor(moexApi, yahooApi, timeout) {
+	constructor(moexApi, marketWatchApi, timeout) {
 		this.moexApi = moexApi
-		this.yahooApi = yahooApi
+		this.marketWatchApi = marketWatchApi
 		this.times = 0
 		this.maxTried = 2
 		this.timeout = timeout || 2
@@ -15,8 +15,8 @@ class Stock {
 		return new Promise(((resolve, reject) => {
 			Promise.all([
 				this.getTickerPriceFromMoex("USD000UTSTOM"),
-				this.getTickerPriceFromYahoo("^GSPC"),
-				this.getTickerPriceFromYahoo("000001.SS"),
+				this.getTickerPriceFromMarketWatch("spx"),
+				this.getTickerPriceFromMarketWatch("shcomp?countrycode=cn"),
 				this.getTickerPriceFromMoex("IMOEX")
 			]).then((result) => {
 				resolve([
@@ -52,10 +52,10 @@ class Stock {
 		})
 	}
 
-	getTickerPriceFromYahoo(ticker) {
+	getTickerPriceFromMarketWatch(ticker) {
 		return new Promise(async (resolve, reject) => {
 			try {
-				let securityPrice = await this.yahooApi.getCurrentPrice(ticker.toUpperCase())
+				let securityPrice = await this.marketWatchApi.getStockPrice(ticker.toLowerCase())
 				resolve(parseFloat(securityPrice))
 			} catch (e) {
 				reject(e)

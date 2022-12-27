@@ -13,7 +13,7 @@ const bot = new Telegraf(config.telegram.token)
 const prodCalendar = new ProdCalendar("ru")
 
 const cron = {
-	stock: "0 5 17 * * * "
+	stock: "0 5 10,17 * * * "
 }
 
 log.info(`Topic Stock started at ${cron.stock}`)

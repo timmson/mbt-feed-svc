@@ -1,13 +1,13 @@
 const MoexAPI = require("moex-api")
-const YahooAPI = require("yahoo-stock-prices")
+const MarketWatchAPI = require("../lib/market-watch")
 
 const Stock = require("../lib/stock")
-const stock = new Stock(new MoexAPI(), YahooAPI)
+const stock = new Stock(new MoexAPI(), new MarketWatchAPI())
 
 class StockAPI {
 
 	getPrice(ticker) {
-		return stock.getTickerPriceFromYahoo(ticker)
+		return stock.getTickerPriceFromMarketWatch(ticker)
 	}
 
 	getMessage() {

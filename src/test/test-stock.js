@@ -27,20 +27,18 @@ class MockMoexAPI {
 	}
 }
 
-class MockYahooAPI {
-	getCurrentPrice(ticker) {
-		return Promise.resolve({"^GSPC": 3488, "000001.SS": 3675.02}[ticker])
+class MockMarketWatchAPI {
+	getStockPrice(ticker) {
+		return Promise.resolve({"spx": 3488, "shcomp?countrycode=cn": 3675.02}[ticker])
 	}
 }
 
 describe("Stock should", () => {
 
-
 	test("return message", () => {
-		const stock = new Stock(new MockMoexAPI(), new MockYahooAPI(), 0.1)
+		const stock = new Stock(new MockMoexAPI(), new MockMarketWatchAPI(), 0.1)
 
-		//const expected = "💰75.00, 🇺🇸3488.00, 🇨🇳3675.02, 🇷🇺3489.00"
-		const expected = "💰75.00, 🇷🇺3489.00"
+		const expected = "💰75.00, 🇺🇸3488.00, 🇨🇳3675.02, 🇷🇺3489.00"
 
 		return stock.getMessage().then((actual) => expect(actual).toEqual(expected))
 	})

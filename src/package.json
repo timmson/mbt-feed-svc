@@ -9,6 +9,7 @@
     "cron": "^1.8.3",
     "log4js": "^6.6.1",
     "moex-api": "^1.1.1",
+    "node-fetch": "2.6.7",
     "prod-cal": "^2.0.0",
     "request": "^2.88.2",
     "telegraf": "^3.40.0",

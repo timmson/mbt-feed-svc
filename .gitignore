@@ -1,5 +1,6 @@
 .idea/
 
-src/node_modules
-src/config.js
-src/coverage
+coverage
+dist/config.js
+
+node_modules

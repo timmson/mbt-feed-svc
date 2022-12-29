@@ -18,12 +18,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Lint and coverage
+    - name: Lint, coverage and build
       run: |
-        cd ./src
         npm i
-        npm run lint
+#        npm run lint
         npm run coverage && npx codecov
+        npm run build
       env:
         CI: true
         CODECOV_TOKEN: e017451c-146d-46cb-b1b3-d7932042bd9c

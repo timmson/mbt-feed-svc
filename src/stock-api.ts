@@ -1,9 +1,18 @@
-const log = require("log4js").getLogger("stock")
+import {MarketWatch} from "./market-watch"
+import {getLogger} from "log4js"
+
+const log = getLogger("stock")
 log.level = "info"
 
 class StockAPI {
 
-	constructor(moexApi, marketWatchApi, timeout) {
+	private moexApi: any
+	private marketWatchApi: MarketWatch
+	private times: number
+	private readonly maxTried: number
+	private readonly timeout: number
+
+	constructor(moexApi: any, marketWatchApi: MarketWatch, timeout?: number) {
 		this.moexApi = moexApi
 		this.marketWatchApi = marketWatchApi
 		this.times = 0
@@ -11,11 +20,11 @@ class StockAPI {
 		this.timeout = timeout || 2
 	}
 
-	getTickerPriceFromMoex(ticker, currency) {
+	getTickerPriceFromMoex(ticker: string, currency?: string): Promise<number> {
 		return new Promise(async (resolve, reject) => {
 			try {
 				log.info(`Calling MOEX(${ticker},${currency}) ${this.times + 1} of ${this.maxTried + 1}...`)
-				let security = await this.moexApi.securityMarketData(ticker, currency)
+				const security = await this.moexApi.securityMarketData(ticker, currency)
 				this.times = 0
 				log.info(`...MOEX(${ticker},${currency}) = ${security.node.last}`)
 				resolve(parseFloat(security.node.last))
@@ -33,7 +42,7 @@ class StockAPI {
 		})
 	}
 
-	getMessageFromRuStockExchange() {
+	getMessageFromRuStockExchange(): Promise<string> {
 		return new Promise(((resolve, reject) => {
 			Promise.all([
 				this.getTickerPriceFromMoex("USD000UTSTOM"),
@@ -48,7 +57,7 @@ class StockAPI {
 		}))
 	}
 
-	getMessageFromIntStockExchange() {
+	getMessageFromIntStockExchange(): Promise<string>  {
 		return new Promise(((resolve, reject) => {
 			Promise.all([
 				this.marketWatchApi.getIndexPrice("spx"),
@@ -64,4 +73,4 @@ class StockAPI {
 	}
 }
 
-module.exports = StockAPI
+export default StockAPI

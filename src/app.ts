@@ -1,17 +1,20 @@
-const config = require("./config")
-const log = require("log4js").getLogger("main")
+import config from "./config"
+import log4js from "log4js"
 
-const Telegraf = require("telegraf")
-const ProdCalendar = require("prod-cal")
+const log = log4js.getLogger("main")
 
-const MoexAPI = require("moex-api")
-const MarketWatchAPI = require("./lib/market-watch")
+import Telegraf from "telegraf"
+import ProdCalendar from "prod-cal"
 
-const StockAPI = require("./lib/stock-api")
-const Calendar = require("prod-cal")
-const stockAPI = new StockAPI(new MoexAPI(), new MarketWatchAPI())
+import MoexAPI from "moex-api"
+import {MarketWatchImpl} from "./market-watch"
 
-const CronJob = require("cron").CronJob
+import Calendar from "prod-cal"
+import {CronJob} from "cron"
+
+import StockAPI from "./stock-api"
+
+const stockAPI = new StockAPI(new MoexAPI(), new MarketWatchImpl())
 
 log.level = "info"
 const bot = new Telegraf(config.telegram.token)
@@ -39,11 +42,11 @@ new CronJob({
 })
 
 const sendStockMessage = async ({id, name}) => {
-	let messageFromRuSE = await stockAPI.getMessageFromRuStockExchange()
+	const messageFromRuSE = await stockAPI.getMessageFromRuStockExchange()
 	log.info(`${id} [${name}] <- ${messageFromRuSE}`)
 	await bot.telegram.sendMessage(id, messageFromRuSE, {"parse_mode": "HTML"})
 
-	let messageFromIntSE = await stockAPI.getMessageFromIntStockExchange()
+	const messageFromIntSE = await stockAPI.getMessageFromIntStockExchange()
 	log.info(`${id} [${name}] <- ${messageFromIntSE}`)
 	await bot.telegram.sendMessage(id, messageFromIntSE, {"parse_mode": "HTML"})
 }
@@ -70,7 +73,7 @@ bot.command("stock", async (ctx) => {
 bot.on("text", async (ctx) => {
 	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${ctx.message.text}`)
 	try {
-		let priceFromRuSE = await stockAPI.getTickerPriceFromMoex(ctx.message.text)
+		const priceFromRuSE = await stockAPI.getTickerPriceFromMoex(ctx.message.text)
 		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${priceFromRuSE}`)
 		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${priceFromRuSE}`, {"parse_mode": "HTML"})
 	} catch (err) {

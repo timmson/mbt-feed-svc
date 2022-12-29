@@ -1,4 +1,4 @@
-FROM timmson/mbt-platform-v2:node
+FROM --platform=linux/amd64/v8 timmson/mbt-platform-v2:node
 LABEL maintaner="Krotov Artem <timmson666@mail.ru>"
 
 ARG username
@@ -9,10 +9,11 @@ RUN useradd ${username} -s /bin/bash -G sudo -md /home/${username} && \
 
 WORKDIR /app
 
-COPY src/ .
+COPY dist/ .
+COPY node_modules/ ./node_modules
 
-RUN npm i && chown -R ${username}:${username} .
+RUN chown -R ${username}:${username} .
 
 USER ${username}
 
-CMD ["npm", "start"]
+CMD ["node", "app"]

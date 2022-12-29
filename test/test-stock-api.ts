@@ -1,12 +1,15 @@
-const Stock = require("../lib/stock-api")
+import Stock from "../src/stock-api"
+import {MarketWatch} from "../src/market-watch"
 
 class MockMoexAPI {
+
+	private times: number
 
 	constructor() {
 		this.times = 0
 	}
 
-	securityMarketData(ticker) {
+	securityMarketData(ticker: string): Promise<any> {
 		return new Promise((resolve, reject) => {
 			if (ticker === "IMOEX") {
 				resolve(
@@ -27,15 +30,15 @@ class MockMoexAPI {
 	}
 }
 
-class MockMarketWatchAPI {
-	getIndexPrice(ticker) {
+class MockMarketWatch implements MarketWatch {
+	getIndexPrice(ticker): Promise<number> {
 		return Promise.resolve({"spx": 3488, "shcomp?countrycode=cn": 3675.02}[ticker])
 	}
 }
 
 describe("Stock should", () => {
 
-	const stock = new Stock(new MockMoexAPI(), new MockMarketWatchAPI(), 0.1)
+	const stock = new Stock(new MockMoexAPI(), new MockMarketWatch(), 0.1)
 
 	test("return message from russian stock exchange", () => {
 

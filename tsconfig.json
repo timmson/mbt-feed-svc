@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "declaration": false,
+    "module": "CommonJS",
+    "outDir": "./dist/",
+    "target": "ES6"
+  },
+  "files": [
+    "./src/app.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

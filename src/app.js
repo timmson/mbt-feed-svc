@@ -4,8 +4,13 @@ const log = require("log4js").getLogger("main")
 const Telegraf = require("telegraf")
 const ProdCalendar = require("prod-cal")
 
-const StockApi = require("./modules/stock-api")
-const stockApi = new StockApi()
+const MoexAPI = require("moex-api")
+const MarketWatchAPI = require("./lib/market-watch")
+
+const StockAPI = require("./lib/stock-api")
+const Calendar = require("prod-cal")
+const stockAPI = new StockAPI(new MoexAPI(), new MarketWatchAPI())
+
 const CronJob = require("cron").CronJob
 
 log.level = "info"
@@ -21,10 +26,8 @@ new CronJob({
 	cronTime: cron.stock,
 	onTick: async () => {
 		try {
-			if (prodCalendar.getDate(new Date()) !== "holiday") {
-				let text = await stockApi.getMessage()
-				log.info(`${config.stockChannel} [${config.stockChannel}] <- ${text}`)
-				await bot.telegram.sendMessage(config.stockChannel, text, {"parse_mode": "HTML"})
+			if (prodCalendar.getDate(new Date()) !== Calendar.DAY_HOLIDAY) {
+				await sendStockMessage({id: config.stockChannel, name: config.stockChannel})
 			} else {
 				log.info("Stock - nothing to send")
 			}
@@ -35,11 +38,21 @@ new CronJob({
 	start: true
 })
 
+const sendStockMessage = async ({id, name}) => {
+	let messageFromRuSE = await stockAPI.getMessageFromRuStockExchange()
+	log.info(`${id} [${name}] <- ${messageFromRuSE}`)
+	await bot.telegram.sendMessage(id, messageFromRuSE, {"parse_mode": "HTML"})
+
+	let messageFromIntSE = await stockAPI.getMessageFromIntStockExchange()
+	log.info(`${id} [${name}] <- ${messageFromIntSE}`)
+	await bot.telegram.sendMessage(id, messageFromIntSE, {"parse_mode": "HTML"})
+}
+
 
 bot.command("start", async (ctx) => {
 	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /start`)
 	try {
-		await ctx.reply("Ok! Now send funny picture to me")
+		await ctx.reply("Ok!")
 	} catch (err) {
 		log.error(err)
 	}
@@ -48,9 +61,7 @@ bot.command("start", async (ctx) => {
 bot.command("stock", async (ctx) => {
 	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /stock`)
 	try {
-		let text = await stockApi.getMessage()
-		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`)
-		await bot.telegram.sendMessage(ctx.message.from.id, text, {"parse_mode": "HTML"})
+		await sendStockMessage({id: ctx.message.from.id, name: ctx.message.from.username})
 	} catch (err) {
 		log.error(err)
 	}
@@ -59,11 +70,11 @@ bot.command("stock", async (ctx) => {
 bot.on("text", async (ctx) => {
 	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${ctx.message.text}`)
 	try {
-		let text = await stockApi.getPrice(ctx.message.text)
-		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${text}`)
-		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${text}`, {"parse_mode": "HTML"})
+		let priceFromRuSE = await stockAPI.getTickerPriceFromMoex(ctx.message.text)
+		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${priceFromRuSE}`)
+		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${priceFromRuSE}`, {"parse_mode": "HTML"})
 	} catch (err) {
-		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: not found. If you would like to search stocks at MOEX, please add ".me" at the end like "sber.me"`, {"parse_mode": "HTML"})
+		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: not found.`, {"parse_mode": "HTML"})
 		log.error(err)
 	}
 })

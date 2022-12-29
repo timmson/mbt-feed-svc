@@ -1,25 +1,26 @@
 const cheerio = require("cheerio")
-const fetch = require("node-fetch")
-const log = require("log4js").getLogger("market-watch")
-log.level = "info"
+const axios = require("axios")
 
-const baseUrl = "https://www.marketwatch.com/investing/index/"
+const baseUrl = "https://www.marketwatch.com/investing"
 
 class MarketWatch {
 
-	async getStockPrice(ticket) {
-		try {
-			const url = `${baseUrl + ticket}`
-			log.info(`Fetching ${url}`)
-			const resp = await fetch(url)
-			const body = await resp.text()
-			const $ = cheerio.load(body)
-			const value = $("meta[name=\"price\"]").attr("content").replace(",","")
-			log.info(`...OK[${value}}`)
-			return value
-		} catch (e) {
-			console.log(e)
+	async getIndexPrice(ticket) {
+		return this.getStockPrice("index", ticket)
+	}
+
+	async getStockPrice(type, ticket) {
+		const url = [baseUrl, type, ticket].join("/")
+		const response = await axios.get(url)
+
+		if (response.statusText !== "OK") {
+			throw new Error(`${url} ${response.status} ${response.data}`)
 		}
+
+		const $ = cheerio.load(response.data)
+		const value =  $("meta[name=\"price\"]").attr("content").replace(",", "")
+
+		return parseFloat(value)
 	}
 }
 

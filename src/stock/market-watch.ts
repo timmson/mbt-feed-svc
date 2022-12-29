@@ -1,12 +1,8 @@
 import axios from "axios"
 import cheerio from "cheerio"
+import {MarketWatch} from "../interfaces"
 
 const baseUrl = "https://www.marketwatch.com/investing"
-
-export interface MarketWatch {
-
-    getIndexPrice(ticket: string): Promise<number>
-}
 
 export class MarketWatchImpl implements MarketWatch{
 

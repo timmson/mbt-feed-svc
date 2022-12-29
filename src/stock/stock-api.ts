@@ -1,18 +1,16 @@
-import {MarketWatch} from "./market-watch"
-import {getLogger} from "log4js"
+import {MarketWatch, StockAPI} from "../interfaces"
 
-const log = getLogger("stock")
-log.level = "info"
+export class StockAPIImpl implements StockAPI {
 
-class StockAPI {
-
+	private log: any
 	private moexApi: any
 	private marketWatchApi: MarketWatch
 	private times: number
 	private readonly maxTried: number
 	private readonly timeout: number
 
-	constructor(moexApi: any, marketWatchApi: MarketWatch, timeout?: number) {
+	constructor(getLogger: any, moexApi: any, marketWatchApi: MarketWatch, timeout?: number) {
+		this.log = getLogger("stock")
 		this.moexApi = moexApi
 		this.marketWatchApi = marketWatchApi
 		this.times = 0
@@ -23,16 +21,16 @@ class StockAPI {
 	getTickerPriceFromMoex(ticker: string, currency?: string): Promise<number> {
 		return new Promise(async (resolve, reject) => {
 			try {
-				log.info(`Calling MOEX(${ticker},${currency}) ${this.times + 1} of ${this.maxTried + 1}...`)
+				this.log.info(`Calling MOEX(${ticker},${currency}) ${this.times + 1} of ${this.maxTried + 1}...`)
 				const security = await this.moexApi.securityMarketData(ticker, currency)
 				this.times = 0
-				log.info(`...MOEX(${ticker},${currency}) = ${security.node.last}`)
+				this.log.info(`...MOEX(${ticker},${currency}) = ${security.node.last}`)
 				resolve(parseFloat(security.node.last))
 			} catch (e) {
-				log.error(e)
+				this.log.error(e)
 				if (this.times < this.maxTried) {
 					this.times++
-					log.error(`Wait ${this.timeout}s until next try...`)
+					this.log.error(`Wait ${this.timeout}s until next try...`)
 					setTimeout(() => this.getTickerPriceFromMoex(ticker, currency)
 						.then((result) => resolve(result), (error) => reject(error)), this.timeout * 1000)
 				} else {
@@ -57,7 +55,7 @@ class StockAPI {
 		}))
 	}
 
-	getMessageFromIntStockExchange(): Promise<string>  {
+	getMessageFromIntStockExchange(): Promise<string> {
 		return new Promise(((resolve, reject) => {
 			Promise.all([
 				this.marketWatchApi.getIndexPrice("spx"),
@@ -72,5 +70,3 @@ class StockAPI {
 		}))
 	}
 }
-
-export default StockAPI

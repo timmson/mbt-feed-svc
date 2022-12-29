@@ -9,11 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const log4js_1 = require("log4js");
-const log = (0, log4js_1.getLogger)("stock");
-log.level = "info";
-class StockAPI {
-    constructor(moexApi, marketWatchApi, timeout) {
+exports.StockAPIImpl = void 0;
+class StockAPIImpl {
+    constructor(getLogger, moexApi, marketWatchApi, timeout) {
+        this.log = getLogger("stock");
         this.moexApi = moexApi;
         this.marketWatchApi = marketWatchApi;
         this.times = 0;
@@ -23,17 +22,17 @@ class StockAPI {
     getTickerPriceFromMoex(ticker, currency) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             try {
-                log.info(`Calling MOEX(${ticker},${currency}) ${this.times + 1} of ${this.maxTried + 1}...`);
+                this.log.info(`Calling MOEX(${ticker},${currency}) ${this.times + 1} of ${this.maxTried + 1}...`);
                 const security = yield this.moexApi.securityMarketData(ticker, currency);
                 this.times = 0;
-                log.info(`...MOEX(${ticker},${currency}) = ${security.node.last}`);
+                this.log.info(`...MOEX(${ticker},${currency}) = ${security.node.last}`);
                 resolve(parseFloat(security.node.last));
             }
             catch (e) {
-                log.error(e);
+                this.log.error(e);
                 if (this.times < this.maxTried) {
                     this.times++;
-                    log.error(`Wait ${this.timeout}s until next try...`);
+                    this.log.error(`Wait ${this.timeout}s until next try...`);
                     setTimeout(() => this.getTickerPriceFromMoex(ticker, currency)
                         .then((result) => resolve(result), (error) => reject(error)), this.timeout * 1000);
                 }
@@ -70,4 +69,4 @@ class StockAPI {
         }));
     }
 }
-exports.default = StockAPI;
+exports.StockAPIImpl = StockAPIImpl;

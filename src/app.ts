@@ -1,24 +1,33 @@
 import config from "./config"
 import log4js from "log4js"
-
 const log = log4js.getLogger("main")
+log.level = "info"
 
 import Telegraf from "telegraf"
+const bot = new Telegraf(config.telegram.token)
+
 import ProdCalendar from "prod-cal"
+const prodCalendar = new ProdCalendar("ru")
 
 import MoexAPI from "moex-api"
-import {MarketWatchImpl} from "./market-watch"
+import {MarketWatchImpl} from "./stock/market-watch"
 
-import Calendar from "prod-cal"
 import {CronJob} from "cron"
 
-import StockAPI from "./stock-api"
+import {StockAPIImpl} from "./stock/stock-api"
+const stockAPI = new StockAPIImpl(log4js.getLogger, new MoexAPI(), new MarketWatchImpl())
 
-const stockAPI = new StockAPI(new MoexAPI(), new MarketWatchImpl())
+import StartRoute from "./routes/start-route"
+const startRouter = new StartRoute(log)
 
-log.level = "info"
-const bot = new Telegraf(config.telegram.token)
-const prodCalendar = new ProdCalendar("ru")
+import StockRoute from "./routes/stock-route"
+const stockHandler = new StockRoute(log, bot, stockAPI)
+
+import ScheduleStockRoute from "./routes/schedule-stock-route"
+const scheduleStockRoute = new ScheduleStockRoute(log, bot, stockAPI, prodCalendar, config)
+
+import TextRoute from "./routes/text-route"
+const textRoute = new TextRoute(log, bot, stockAPI)
 
 const cron = {
 	stock: "0 5 10,17 * * * "
@@ -27,60 +36,15 @@ const cron = {
 log.info(`Topic Stock started at ${cron.stock}`)
 new CronJob({
 	cronTime: cron.stock,
-	onTick: async () => {
-		try {
-			if (prodCalendar.getDate(new Date()) !== Calendar.DAY_HOLIDAY) {
-				await sendStockMessage({id: config.stockChannel, name: config.stockChannel})
-			} else {
-				log.info("Stock - nothing to send")
-			}
-		} catch (e) {
-			log.error(e)
-		}
-	},
+	onTick: () => scheduleStockRoute.handle(),
 	start: true
 })
 
-const sendStockMessage = async ({id, name}) => {
-	const messageFromRuSE = await stockAPI.getMessageFromRuStockExchange()
-	log.info(`${id} [${name}] <- ${messageFromRuSE}`)
-	await bot.telegram.sendMessage(id, messageFromRuSE, {"parse_mode": "HTML"})
+bot.command("start", startRouter.handle)
 
-	const messageFromIntSE = await stockAPI.getMessageFromIntStockExchange()
-	log.info(`${id} [${name}] <- ${messageFromIntSE}`)
-	await bot.telegram.sendMessage(id, messageFromIntSE, {"parse_mode": "HTML"})
-}
+bot.command("stock", stockHandler.handle)
 
-
-bot.command("start", async (ctx) => {
-	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /start`)
-	try {
-		await ctx.reply("Ok!")
-	} catch (err) {
-		log.error(err)
-	}
-})
-
-bot.command("stock", async (ctx) => {
-	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- /stock`)
-	try {
-		await sendStockMessage({id: ctx.message.from.id, name: ctx.message.from.username})
-	} catch (err) {
-		log.error(err)
-	}
-})
-
-bot.on("text", async (ctx) => {
-	log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${ctx.message.text}`)
-	try {
-		const priceFromRuSE = await stockAPI.getTickerPriceFromMoex(ctx.message.text)
-		log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${priceFromRuSE}`)
-		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${priceFromRuSE}`, {"parse_mode": "HTML"})
-	} catch (err) {
-		await bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: not found.`, {"parse_mode": "HTML"})
-		log.error(err)
-	}
-})
+bot.on("text", textRoute.handle)
 
 bot.startPolling()
 bot.telegram.sendMessage(config.to.id, "Started at " + new Date()).catch((err) => log.error(err))

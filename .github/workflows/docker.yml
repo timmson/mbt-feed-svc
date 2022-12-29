@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Generate config
-        run: echo "${{ secrets.CONFIG_FILE }}" > src/config.js
+        run: echo "${{ secrets.CONFIG_FILE }}" > dist/config.js
 
       - name: Build image
         run: docker-compose build

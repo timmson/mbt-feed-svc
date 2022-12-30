@@ -1,12 +1,19 @@
 import {TelegrafContext} from "telegraf/typings/context"
 
-export interface MarketWatch {
+export interface MoexAPI {
+
+	getIndexPrice(): Promise<number>
+
+	getUSDPrice(): Promise<number>
+
+}
+
+export interface MarketWatchAPI {
 
 	getIndexPrice(ticket: string): Promise<number>
 }
 
 export interface StockAPI {
-	getTickerPriceFromMoex(ticker: string, currency?: string): Promise<number>
 
 	getMessageFromRuStockExchange(): Promise<string>
 

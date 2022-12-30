@@ -9,19 +9,19 @@ const bot = new Telegraf(config.telegram.token)
 import ProdCalendar from "prod-cal"
 const prodCalendar = new ProdCalendar("ru")
 
-import MoexAPI from "moex-api"
-import {MarketWatchImpl} from "./stock/market-watch"
+import {MoexAPIImpl} from "./stock/moex-api"
+import {MarketWatchImpl} from "./stock/market-watch-api"
 
 import {CronJob} from "cron"
 
 import {StockAPIImpl} from "./stock/stock-api"
-const stockAPI = new StockAPIImpl(log4js.getLogger, new MoexAPI(), new MarketWatchImpl())
+const stockAPI = new StockAPIImpl(log4js.getLogger("stock"), new MoexAPIImpl(), new MarketWatchImpl())
 
 import StartRoute from "./routes/start-route"
-const startRouter = new StartRoute(log)
+const startRoute = new StartRoute(log)
 
 import StockRoute from "./routes/stock-route"
-const stockHandler = new StockRoute(log, bot, stockAPI)
+const stockRoute = new StockRoute(log, bot, stockAPI)
 
 import ScheduleStockRoute from "./routes/schedule-stock-route"
 const scheduleStockRoute = new ScheduleStockRoute(log, bot, stockAPI, prodCalendar, config)
@@ -40,11 +40,9 @@ new CronJob({
 	start: true
 })
 
-bot.command("start", startRouter.handle)
-
-bot.command("stock", stockHandler.handle)
-
-bot.on("text", textRoute.handle)
+bot.command("start", (ctx) => startRoute.handle(ctx))
+bot.command("stock", (ctx) => stockRoute.handle(ctx))
+bot.on("text", (ctx) => textRoute.handle(ctx))
 
 bot.startPolling()
 bot.telegram.sendMessage(config.to.id, "Started at " + new Date()).catch((err) => log.error(err))

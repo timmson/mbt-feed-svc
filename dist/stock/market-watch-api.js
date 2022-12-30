@@ -27,11 +27,11 @@ class MarketWatchImpl {
             const url = [baseUrl, type, ticket].join("/");
             const response = yield axios_1.default.get(url);
             if (response.statusText !== "OK") {
-                throw new Error(`${url} ${response.status} ${response.data}`);
+                return Promise.reject(`${url} ${response.status} ${response.data}`);
             }
             const $ = cheerio_1.default.load(response.data);
             const value = $("meta[name=\"price\"]").attr("content").replace(",", "");
-            return parseFloat(value);
+            return Promise.resolve(parseFloat(value));
         });
     }
 }

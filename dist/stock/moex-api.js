@@ -12,21 +12,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const abstract_stock_route_1 = __importDefault(require("./abstract-stock-route"));
-class TextRoute extends abstract_stock_route_1.default {
-    handle(ctx) {
+exports.MoexAPIImpl = void 0;
+const axios_1 = __importDefault(require("axios"));
+const baseURL = "https://iss.moex.com/iss/engines";
+class MoexAPIImpl {
+    getIndexPrice() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${ctx.message.text}`);
-            try {
-                const priceFromRuSE = "Ooops:(";
-                this.log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${priceFromRuSE}`);
-                yield this.bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${priceFromRuSE}`, { "parse_mode": "HTML" });
+            return this.getPrice(`${baseURL}/stock/markets/index/securities/IMOEX.json`);
+        });
+    }
+    getUSDPrice() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.getPrice(`${baseURL}/currency/markets/selt/securities/USD000UTSTOM.json`);
+        });
+    }
+    getPrice(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield axios_1.default.get(url);
+            if (response.statusText !== "OK") {
+                return Promise.reject(`${url} ${response.status} ${response.data}`);
             }
-            catch (err) {
-                yield this.bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: not found.`, { "parse_mode": "HTML" });
-                this.log.error(err);
-            }
+            return Promise.resolve(response.data.marketdata.data[0][4]);
         });
     }
 }
-exports.default = TextRoute;
+exports.MoexAPIImpl = MoexAPIImpl;

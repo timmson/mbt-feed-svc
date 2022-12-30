@@ -1,36 +1,18 @@
-import {MarketWatch} from "../src/interfaces"
-import {StockAPIImpl} from "../src/stock/stock-api"
+import {MarketWatchAPI, MoexAPI} from "../../src/interfaces"
+import {StockAPIImpl} from "../../src/stock/stock-api"
 
-class MockMoexAPI {
+class MockMoexAPI implements MoexAPI{
 
-	private times: number
-
-	constructor() {
-		this.times = 0
+	getIndexPrice(): Promise<number> {
+		return Promise.resolve(3489.00)
 	}
 
-	securityMarketData(ticker: string): Promise<any> {
-		return new Promise((resolve, reject) => {
-			if (ticker === "IMOEX") {
-				resolve(
-					{
-						node: {last: {"IMOEX": "3489.00"}[ticker]}
-					}
-				)
-			} else {
-				if (this.times < 2) {
-					this.times++
-					reject(new Error("ERR"))
-				}
-				resolve({
-					node: {last: {"USD000UTSTOM": "75.00"}[ticker]}
-				})
-			}
-		})
+	getUSDPrice(): Promise<number> {
+		return Promise.resolve(75.00)
 	}
 }
 
-class MockMarketWatch implements MarketWatch {
+class MockMarketWatch implements MarketWatchAPI {
 	getIndexPrice(ticker): Promise<number> {
 		return Promise.resolve({"spx": 3488, "shcomp?countrycode=cn": 3675.02}[ticker])
 	}

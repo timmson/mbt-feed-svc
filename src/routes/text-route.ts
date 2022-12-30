@@ -7,7 +7,7 @@ export default class TextRoute extends AbstractStockRoute implements RouteHandle
 	async handle(ctx: TelegrafContext) {
 		this.log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${ctx.message.text}`)
 		try {
-			const priceFromRuSE = await this.stockAPI.getTickerPriceFromMoex(ctx.message.text)
+			const priceFromRuSE = "Ooops:("
 			this.log.info(`${ctx.message.from.username} [${ctx.message.from.id}] <- ${priceFromRuSE}`)
 			await this.bot.telegram.sendMessage(ctx.message.from.id, `${ctx.message.text}: ${priceFromRuSE}`, {"parse_mode": "HTML"})
 		} catch (err) {

@@ -8,13 +8,15 @@ class MockMoexAPI {
 
 	securityMarketData(ticker) {
 		return new Promise((resolve, reject) => {
-			if (ticker === "IMOEX") {
+			switch (ticker) {
+			case "IMOEX" :
 				resolve(
 					{
 						node: {last: {"IMOEX": "3489.00"}[ticker]}
 					}
 				)
-			} else {
+				break
+			case "USD000UTSTOM" :
 				if (this.times < 2) {
 					this.times++
 					reject(new Error("ERR"))
@@ -22,6 +24,14 @@ class MockMoexAPI {
 				resolve({
 					node: {last: {"USD000UTSTOM": "75.00"}[ticker]}
 				})
+				break;
+			case "MREDC" :
+				resolve(
+					{
+						node: {last: {"MREDC": "251345.99"}[ticker]}
+					}
+				)
+				break;
 			}
 		})
 	}
@@ -39,12 +49,12 @@ describe("Stock should", () => {
 
 	test("return message from russian stock exchange", () => {
 
-		const expected = "💰75.00, 🇷🇺3489.00"
+		const expected = "💰75.00, 🇷🇺3489.00, 🏡251.300K"
 
 		return stock.getMessageFromRuStockExchange().then((actual) => expect(actual).toEqual(expected))
 	})
 
-	test("return message from russian stock exchange", () => {
+	test("return message from foreigin stock exchange", () => {
 
 		const expected = "🇺🇸3488.00, 🇨🇳3675.02"
 

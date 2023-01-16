@@ -37,11 +37,13 @@ class StockAPI {
 		return new Promise(((resolve, reject) => {
 			Promise.all([
 				this.getTickerPriceFromMoex("USD000UTSTOM"),
-				this.getTickerPriceFromMoex("IMOEX")
+				this.getTickerPriceFromMoex("IMOEX"),
+				this.getTickerPriceFromMoex("MREDC")
 			]).then((result) => {
 				resolve([
 					"💰" + result[0].toFixed(2),
-					"🇷🇺" + (result[1]).toFixed(2)
+					"🇷🇺" + (result[1]).toFixed(2),
+					"🏡" + (result[2]/1000.00).toFixed(1) + "00K",
 				].join(", ")
 				)
 			}).catch((err) => reject(err))
